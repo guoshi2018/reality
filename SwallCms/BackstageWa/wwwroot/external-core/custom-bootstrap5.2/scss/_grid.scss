@@ -1,0 +1,93 @@
+// Row
+//
+// Rows contain your columns.
+@use "variables" as *;
+@use "mixins/grid" as *;
+@use "sundry" as *;
+
+@if $enable-grid-classes {
+  /*! flex 风格的 grid */
+  .row,
+  .rowr,
+  .vrow,
+  .vrowr {
+    /*! 所有row 通用特征 */
+    @include make-row-common;
+    > * {
+      /*!
+        .row 的直接子级, 以及 .col 等 class　的公共部分
+      */
+      @include make-col-common;
+    }
+  }
+  /*!
+    横向 row .row 和 .rowr
+  */
+  .row,
+  .rowr {
+    //width: 100%;
+    //max-width: 100%;
+    @include make-row-cols-classes(false);
+    @include make-col-classes(false);
+    > * {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+  /*!
+    纵向 row .vrow 和 .vrowr
+  */
+  .vrow,
+  .vrowr {
+    // height: 100%;
+    // max-height: 100%;
+    @include make-row-cols-classes(true);
+    @include make-col-classes(true);
+    > * {
+      height: 100%;
+      max-height: 100%;
+    }
+  }
+  /*!
+    水平正向row .row 的偏移定义
+  */
+  .row {
+    flex-direction: row;
+    @include make-col-offset-mq-n(false, false);
+  }
+  /*!
+    水平反向row .rowr 的偏移定义, 可能需要通过 js 修正, 见 tool.ts
+  */
+  .rowr {
+    flex-direction: row-reverse;
+    @include make-col-offset-mq-n(false, true);
+  }
+  /*!
+    竖直方向row .vrow 的偏移定义, 可能需要通过 js 修正, 见 tool.ts
+  */
+  .vrow {
+    flex-direction: column;
+    @include make-col-offset-mq-n(true, false);
+  }
+  /*!
+    竖直反向row .vrowr 的偏移定义
+  */
+  .vrowr {
+    flex-direction: column-reverse;
+    @include make-col-offset-mq-n(true, true);
+  }
+}
+
+@if $enable-cssgrid {
+  /*!
+    这是官方原版作品, 不太好用, 也不全面. 可以考虑 _xgrid.scss
+  */
+  .grid {
+    display: grid;
+    grid-template-rows: repeat(var(--#{$prefix}rows, 1), 1fr);
+    grid-template-columns: repeat(var(--#{$prefix}columns, #{$grid-columns}), 1fr);
+    gap: var(--#{$prefix}gap, #{$grid-gutter-width});
+
+    @include make-cssgrid();
+  }
+}

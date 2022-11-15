@@ -1,0 +1,72 @@
+// comment it unless need to reconfigure,
+// 最佳体验是在 引用 guoshi-bootstrap.scss 的文件顶部进行
+// @forward "sundry";
+// @forward "variables";
+// @forward "maps";
+// @forward "utilities";
+// @forward "vendor/rfs";
+
+// copyright etc.
+@forward "banner";
+
+// Layout & Content
+@forward "root";
+@forward "reboot";
+@forward "type";
+@forward "containers";
+@forward "grid";
+@forward "xgrid";
+@forward "tables";
+@forward "images";
+
+// Helpers
+//@forward "helpers";
+@forward "helpers/clearfix";
+@forward "helpers/color-bg";
+@forward "helpers/colored-links";
+@forward "helpers/ratio";
+@forward "helpers/position";
+@forward "helpers/stacks";
+@forward "helpers/visually-hidden";
+@forward "helpers/stretched-link";
+@forward "helpers/text-truncation";
+@forward "helpers/vr";
+
+// Utilities
+@forward "utilities/api";
+
+//@forward "forms";
+@forward "forms/labels";
+@forward "forms/form-text";
+@forward "forms/form-control";
+@forward "forms/form-select";
+@forward "forms/form-check";
+@forward "forms/form-range";
+@forward "forms/floating-labels";
+@forward "forms/input-group";
+@forward "forms/validation";
+
+// component
+@forward "accordion";
+@forward "alert";
+@forward "badge";
+@forward "breadcrumb";
+@forward "button-group";
+@forward "buttons";
+@forward "card";
+@forward "carousel";
+@forward "close";
+@forward "dropdown";
+@forward "list-group";
+@forward "modal";
+@forward "nav";
+@forward "navbar";
+@forward "offcanvas";
+@forward "pagination";
+@forward "placeholders";
+@forward "popover";
+@forward "progress";
+@forward "spinners";
+@forward "toasts";
+@forward "tooltip";
+@forward "transitions";

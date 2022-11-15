@@ -1,0 +1,93 @@
+@use "sass:map";
+@use "spaces";
+@use "variables" as *;
+@use "sundry" as *;
+@use "mixins/breakpoints" as *;
+@use "functions" as *;
+
+@mixin make-xgrid($gutter-x: $grid-gutter-width, $gutter-y: $grid-gutter-height) {
+	--#{$prefix}gutter-x: #{$gutter-x};
+	--#{$prefix}gutter-y: #{$gutter-y};
+
+	display: grid;
+	grid-template-columns: repeat(var(--#{$prefix}xgrid-cols, $xgrid-max-columns), 1fr);
+	grid-template-rows: repeat(var(--#{$prefix}xgrid-rows, $xgrid-max-rows), auto);
+	gap: var(--#{$prefix}gutter-y) var(--#{$prefix}gutter-x);
+
+	// 类似于 flex grid, 抵消 .container 的 padding
+	margin-right: calc(-0.5 * var(--#{$prefix}gutter-x));
+	margin-left: calc(-0.5 * var(--#{$prefix}gutter-x));
+	//添加底部的负margin, 与margin-top对称
+	margin-top: calc(-0.5 * var(--#{$prefix}gutter-y));
+	margin-bottom: calc(-0.5 * var(--#{$prefix}gutter-y));
+
+	@include spaces.make-gutters;
+
+	@include make-xgrid-items;
+}
+
+@mixin make-xgrid-items($xrows: $xgrid-max-rows, $xcols: $xgrid-max-columns, $breakpoints: $grid-breakpoints) {
+	@each $breakpoint in map.keys($breakpoints) {
+		$infix: breakpoint-infix($breakpoint, $breakpoints);
+
+		@include media-breakpoint-up($breakpoint, $breakpoints) {
+			// 可用, 但是文件超大, 50多万行, 9M+
+			// @if $xrows > 2 and $xcols > 2 {
+			// 	@for $row-start from 1 through $xrows {
+			// 		@for $row-end from ($row-start + 1) through ($xrows + 1) {
+			// 			@for $col-start from 1 through $xcols {
+			// 				@for $col-end from ($col-start + 1) through ($xcols + 1) {
+			// 					.xg#{$infix}-#{$row-start}-#{$row-end}-#{$col-start}-#{$col-end} {
+			// 						grid-area: #{$row-start}/#{$col-start}/#{$row-end}/#{$col-end};
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// }
+			// 设置行数量
+			@for $i from 1 through $xrows {
+				&.r#{$infix}-#{$i} {
+					--#{$prefix}xgrid-rows: #{$i};
+				}
+			}
+			// 设置列数量
+			@for $i from 1 through $xcols {
+				&.c#{$infix}-#{$i} {
+					--#{$prefix}xgrid-cols: #{$i};
+				}
+			}
+			/*! row  */
+			@for $i from 1 through ($xrows + 1) {
+				.y1#{$infix}-#{$i} {
+					grid-row-start: $i;
+				}
+				.y1#{$infix}-n#{$i} {
+					grid-row-start: -$i;
+				}
+				.y2#{$infix}-#{$i} {
+					grid-row-end: $i;
+				}
+				.y2#{$infix}-n#{$i} {
+					grid-row-end: -$i;
+				}
+			}
+
+			/* column */
+			@for $i from 1 through ($xcols + 1) {
+				.x1#{$infix}-#{$i} {
+					grid-column-start: $i;
+				}
+				.x1#{$infix}-n#{$i} {
+					grid-column-start: -$i;
+				}
+				.x2#{$infix}-#{$i} {
+					grid-column-end: $i;
+				}
+				.x2#{$infix}-n#{$i} {
+					grid-column-end: -$i;
+				}
+			}
+		}
+	}
+}

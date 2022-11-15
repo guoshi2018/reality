@@ -1,0 +1,120 @@
+﻿@page "/exercise/config/access"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-calculator:",
+     IconAtRear = false,
+     LinkTo = "/exercise/config/access",
+     Text = "access configuration",
+     Tooltip = ""
+)]
+@inject IConfiguration Config
+
+<h3>AccessConfiguration</h3>
+
+<h1 style="font-size:@Config["h1FontSize"];">
+    too big
+</h1>
+<details>
+    <summary>配置信息的简单的逐个枚举获取</summary>
+    <form class="container">
+
+        <div class="row mb-3 justify-content-center text-bg-info">
+            同名字段, wwwroot/appsettings.json, 被  wwwroot/config/cars.json  所覆盖
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">address:</label>
+            <input type="text" class="form-control" readonly value="@Config["address"]" />
+        </div>
+
+        <div class="row mb-3 justify-content-center text-bg-info">
+            自定义配置文件: wwwroot/config/cars.json
+        </div>
+        @{
+            // GetSection, 找不到 key, 返回空的 IConfigurationSection(不是 null, 也不引发异常)
+            IConfigurationSection guoshiSection = Config.GetSection("guoshi");
+            IConfigurationSection dateSection = guoshiSection.GetSection("date");
+
+            // GetRequiredSection, 找不到 key,  会引发异常
+            IConfigurationSection dateSec2 = Config.GetRequiredSection("guoshi").GetRequiredSection("date");
+        }
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">guoshi / type():</label>
+            <input type="text" class="form-control" readonly value="@Config["guoshi:type"]" />
+            <input type="text" class="form-control" readonly value="@guoshiSection["type"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">guoshi / amount():</label>
+            <input type="text" class="form-control" readonly value="@Config["guoshi:amount"]" />
+            <input type="text" class="form-control" readonly value="@guoshiSection["amount"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">guoshi / date / one:</label>
+            <input type="text" class="form-control" readonly value="@Config["guoshi:date:one"]" />
+            <input type="text" class="form-control" readonly value="@dateSection["one"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">guoshi / date / two:</label>
+            <input type="text" class="form-control" readonly value="@Config["guoshi:date:two"]" />
+            <input type="text" class="form-control" readonly value="@dateSec2["two"]" />
+        </div>
+
+        <div class="row mb-3 justify-content-center text-bg-info">
+            内存配置的读取
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">color:</label>
+            <input type="text" class="form-control" readonly value="@Config["color"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">type:</label>
+            <input type="text" class="form-control" readonly value="@Config["type"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">wheels:count:</label>
+            <input type="text" class="form-control" readonly value="@Config["wheels:count"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">wheels:brand:</label>
+            <input type="text" class="form-control" readonly value="@Config["wheels:brand"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">wheels:brand:type:</label>
+            <input type="text" class="form-control" readonly value="@Config["wheels:brand:type"]" />
+        </div>
+        <div class="row input-group mb-3">
+            <label class="col-3 text-end">wheels:year:</label>
+            <input type="text" class="form-control" readonly value="@Config["wheels:year"]" />
+        </div>
+
+    </form>
+</details>
+<details>
+    <summary>
+        配置信息的自动循环获取, 注意下面的AsEnumerable()方法, section 对象或数组
+        对应的 keypair&lt;string,string&gt;,被解释为null(而不是 String.Empty, 很怪异)
+        所以要过滤掉
+    </summary>
+    <form class="container">
+        @* 使用 String.Empty 过滤不掉 *@
+        @foreach (var item in Config.AsEnumerable().Where(item => item.Value != null))
+        {
+            <div class="row input-group mb-3">
+                <label class="col-3 text-end">[@item.Key]</label>
+                <input type="text" class="form-control" readonly value="@item.Value" />
+            </div>
+        }
+    </form>
+</details>
+
+<button class="btn btn-primary" @onclick="LookupAtConsole">look up all item, include item.value is null</button>
+@code {
+    private void LookupAtConsole()
+    {
+        // 此时 非原子字段(对象或数组), 枚举时 value 因为是 null, 而显示为 空字串
+        foreach (var item in Config.AsEnumerable(true))
+        {
+            Console.WriteLine($"key:<{item.Key}>,value:<{item.Value}>");
+        }
+    }
+
+}

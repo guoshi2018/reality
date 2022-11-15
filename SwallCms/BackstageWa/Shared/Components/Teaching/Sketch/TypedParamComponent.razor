@@ -1,0 +1,20 @@
+﻿@*
+    很奇怪, 不支持类型约束 where 语句
+    @typeparam TItem where TItem:ValueType
+*@
+@typeparam TItem
+
+<h3>带有泛型类型参数的组件,当前类型参数:</h3>
+@if (DataList is not null)
+{
+    <ul>
+        @foreach (TItem item in DataList)
+        {
+            <li>@item</li>
+        }
+    </ul>
+}
+@code {
+    [Parameter]
+    public IEnumerable<TItem>? DataList { get; set; }
+}

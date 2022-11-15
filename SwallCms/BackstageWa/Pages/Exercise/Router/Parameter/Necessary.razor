@@ -1,0 +1,18 @@
+﻿@* 路由参数测试, 必要的参数 *@
+@page "/exercise/router/parameter/necessary/{text}"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-badge",
+     IconAtRear = false,
+     LinkTo = "/exercise/router/parameter/necessary/a text parameter is necessary",
+     Text = "necessary text",
+     Tooltip = ""
+)]
+
+<h1>Blazor is @Text ! This is a necessary parameter.</h1>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "";
+
+}

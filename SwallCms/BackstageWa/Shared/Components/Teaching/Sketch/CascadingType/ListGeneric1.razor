@@ -1,0 +1,17 @@
+﻿@*
+     组件接收数据，并将名为 TExample 的泛型类型参数级联到其下级组件。
+     在即将到来的父组件中，ListGenericTypeItems2 组件用于显示前面 ListDisplay 组件的列表数据。
+
+*@
+@* 有没有 看不出区别 *@
+@attribute [CascadingTypeParameter(nameof(TExample))]
+@typeparam TExample
+
+<h2>查看级联的效果. 当前类型: @typeof(TExample)</h2>
+
+@ChildContent
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

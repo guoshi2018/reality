@@ -1,0 +1,16 @@
+﻿@* 路由约束强制在路由段和组件之间进行类型匹配。 *@
+
+@page "/exercise/router/constraint/force-match/{id:int}"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-audio",
+     IconAtRear = true,
+     LinkTo = "/exercise/router/constraint/force-match/208",
+     Text = "force-match",
+     Tooltip = ""
+)]
+<h1> User Id:@Id</h1>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+}

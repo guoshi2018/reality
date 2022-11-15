@@ -1,0 +1,27 @@
+// Text truncate
+// Requires inline-block or block for proper styling
+
+@mixin text-truncate() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 自定义多行文字的截断显示省略号
+// @mixin mult-line-text-truncate($max-lines: 3) {
+//   display: -webkit-box;
+//   //-webkit-line-clamp: $max-lines;
+//   -webkit-box-orient: vertical;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+// }
+
+@mixin mult-line-text-truncate-common() {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@mixin mult-line-text-truncate-max-lines($max-lines: 3) {
+  -webkit-line-clamp: $max-lines;
+}

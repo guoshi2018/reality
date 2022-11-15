@@ -1,0 +1,15 @@
+﻿@inject ILogger<Error> logger
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    public void ProcessError(Exception ex)
+    {
+        logger.LogError("利用自定义组件Error的方法:ProcessError捕获异常 - Type: {t} Message:{msg}",
+        ex.GetType(), ex.Message);
+    }
+}

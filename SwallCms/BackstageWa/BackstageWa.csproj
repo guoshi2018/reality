@@ -1,0 +1,117 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PublishTrimmed>false</PublishTrimmed>
+		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Pages\Demo\**" />
+		<Compile Remove="wwwroot\style\scss\bootstrap5.2\**" />
+		<Content Remove="Pages\Demo\**" />
+		<Content Remove="wwwroot\style\scss\bootstrap5.2\**" />
+		<EmbeddedResource Remove="Pages\Demo\**" />
+		<EmbeddedResource Remove="wwwroot\style\scss\bootstrap5.2\**" />
+		<None Remove="Pages\Demo\**" />
+		<None Remove="wwwroot\style\scss\bootstrap5.2\**" />
+		<TypeScriptCompile Remove="Pages\Demo\**" />
+		<TypeScriptCompile Remove="wwwroot\style\scss\bootstrap5.2\**" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="compilerconfig.testing.json" />
+		<Content Remove="wwwroot\script\ts\index.ts" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="bat\how-to-watch.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.6" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ServerLib\ServerLib.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="wwwroot\image\gif\" />
+		<Folder Include="wwwroot\image\icon\" />
+		<Folder Include="wwwroot\image\jpg\" />
+		<Folder Include="wwwroot\script\ts\pages\demo\" />
+		<Folder Include="wwwroot\style\scss\pages\demo\" />
+		<Folder Include="wwwroot\temp\abc\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="compilerconfig.testing.json" />
+		<None Include="Shared\Components\Teaching\Sketch\CascadingType\ListDisplay2.razor" />
+		<None Include="Shared\Components\Teaching\Sketch\CascadingType\ListGeneric1.razor" />
+		<None Include="wwwroot\script\js\head-child-node-loader\config\default-descriptors.js" />
+		<None Include="wwwroot\script\js\head-child-node-loader\config\default-descriptors.js.map" />
+		<None Include="wwwroot\script\js\head-child-node-loader\config\global.js" />
+		<None Include="wwwroot\script\js\head-child-node-loader\config\global.js.map" />
+		<None Include="wwwroot\script\js\head-child-node-loader\core\head-child-node.class.js" />
+		<None Include="wwwroot\script\js\head-child-node-loader\core\head-child-node.class.js.map" />
+		<None Include="wwwroot\script\js\head-child-node-loader\head-child-node-loader.js" />
+		<None Include="wwwroot\script\js\head-child-node-loader\head-child-node-loader.js.map" />
+		<None Include="wwwroot\script\js\index.js" />
+		<None Include="wwwroot\script\js\index.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\dynamic-bootstrap-object-manager.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\dynamic-bootstrap-object-manager.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\dynamic-bootstrap-object-toggler-manager.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\dynamic-bootstrap-object-toggler-manager.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\effect-selector-persist.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\effect-selector-persist.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\effect-selector.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\effect-selector.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\flexgrid-item-offset-mender.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\flexgrid-item-offset-mender.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\live-set.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\live-set.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\observer-wrapper.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\observer-wrapper.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\class\size-watcher.js" />
+		<None Include="wwwroot\script\js\indoor-lib\class\size-watcher.js.map" />
+		<None Include="wwwroot\script\js\indoor-lib\function\guoshi\tool.js" />
+		<None Include="wwwroot\script\js\indoor-lib\function\guoshi\tool.js.map" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<TypeScriptCompile Include="wwwroot\script\ts\index.ts" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+</Project>

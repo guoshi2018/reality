@@ -1,0 +1,64 @@
+﻿@*
+    演示可接受任意可展开特性的组件的必要配置: CaptureUnmatchedValues
+*@
+
+@*
+    > + div > [9]
+	> - label .form-label
+	> - input[type=range] .form-range h(min,max,value,step,disabled)
+*@
+<div class="row border border-primary align-items-center"
+     @attributes="WrapperAttrs">
+    <input @attributes="CustomAttrs" type="range" class="form-range col-6"
+           @bind-value="_curV" />
+    <label class="form-label col-3  mb-0" @attributes="NoUseLabelAttrs">@_curV</label>
+
+    @* 注意, 位于 @attributes 前的被 user 端提供的覆盖, 后面的保留 *@
+    <input type="text" ok="orig ok" @attributes="AdditionalAttrs" hole="origi hole" />
+    <div @attributes="AdditionalAttrs" id="hehe"></div>
+</div>
+@code {
+    private float _curV = 0;
+
+    //private float _max = 100;
+    //private float _min = 0;
+
+    //[Parameter]
+    //public float Max { get; set; }
+    //[Parameter]
+    //public float Min { get; set; }
+
+    //protected override void OnInitialized()
+    //{
+    //    _max = Max;
+    //    _min = Min;
+    //}
+
+    // 采用 @attributes 形式, 则上面的字段均可以退休了
+    [Parameter]
+    //   [Parameter]
+    public Dictionary<string, object> WrapperAttrs { get; set; }
+
+    // [Parameter(CaptureUnmatchedValues = true)]
+    [Parameter]
+    public Dictionary<string, object>? CustomAttrs { get; set; }
+
+    // [Parameter(CaptureUnmatchedValues = true), EditorRequired]
+    [Parameter]
+    public Dictionary<string, object> NoUseLabelAttrs { get; set; }
+
+    // 专门用来携带额外属性(包括自定义属性)
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttrs { get; set; }
+
+    // 这样的参数, 只能有一个, 否则异常:
+    /*System.InvalidOperationException: Multiple properties were found on component
+     *  type 'BackstageWa.Shared.Components.Teaching.Sketch.RangeWrap' with
+        'ParameterAttribute.CaptureUnmatchedValues'. Only   a single property per type can use
+        'ParameterAttribute.CaptureUnmatchedValues'. Properties:
+    AdditionalAttrs
+    */
+    //[Parameter(CaptureUnmatchedValues = true)]
+    // public Dictionary<string, object> AdditionalAttrs2 { get; set; }
+
+}

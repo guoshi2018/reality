@@ -1,0 +1,21 @@
+﻿
+
+<div>
+    <h3>LayerTwo, 吸收 cascading value, 即使是声明为 private 的字段也可以吸收</h3>
+    <button type="button" class="btn @_layerTwo_ti?.ButtonClass">button of layer two</button>
+    <p>
+        @welcome,now is @dt !
+    </p>
+</div>
+
+@code {
+    [CascadingParameter]
+    private ThemeInfo? _layerTwo_ti { get; init; }
+
+    [CascadingParameter(Name = "CasParm1")]
+    private string welcome { get; set; }
+
+    [CascadingParameter(Name = "CasParm2")]
+    private DateTime dt { get; set; }
+
+}

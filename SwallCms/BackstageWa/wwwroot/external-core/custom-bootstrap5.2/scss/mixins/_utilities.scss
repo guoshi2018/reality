@@ -1,0 +1,132 @@
+@use "sundry" as *;
+@use "variables" as *;
+@use "vendor/rfs" as *;
+@use "sass:map";
+@use "sass:meta";
+@use "sass:list";
+
+/// 规则(class)内书写的 css 属性, 可能有多个,
+$_properties: null;
+
+/// 多个要写入规则的css变量名与值构成的map.
+$_extra-css-vars: null;
+
+/// 多个要写入规则的css属性与值构成的map
+$_extra-css-props: null;
+
+// Utility generator
+// Used to generate utilities & print utilities
+@mixin generate-utility($utility, $infix, $is-rfs-media-query: false) {
+  // 用来产生属性值的map, 不是则转换为key/value一致的map
+  $values: map.get($utility, values);
+  @if meta.type-of($values) == "string" or meta.type-of(nth($values, 1)) != "list" {
+    $values: list.zip($values, $values);
+  }
+
+  // 在@mix中修改必须冠以 !global. Multiple properties are possible.
+  // 以多个属性处理. 由于需要轮询, 所以单个属性, 必须转为list
+  $_properties: map.get($utility, property) !global;
+  @if meta.type-of($_properties) == "string" {
+    $_properties: list.append((), $_properties);
+  }
+
+  // 产生的类名 即 .mock{...} 的 mock
+  $cn: map.get($utility, class) or nth($_properties, 1) or "";
+
+  // 只产生一条纯粹的css变量定义(赋值),
+  $gen-css-var: map.get($utility, css-var);
+
+  // 要书写的css变量名称, 经修改, 已经带前缀, 如果找不到, 则使用上述
+  $css-var-name: --#{$prefix} + (map.get($utility, css-variable-name) or $cn);
+
+  // State params to generate pseudo-classes
+  $states: map.get($utility, state);
+
+  // 屏宽响应的断点标志, sm以下为空字符串
+  $infix: if($cn== "" and str-slice($infix, 1, 1) == "-", str-slice($infix, 2), $infix);
+
+  // 是否保持right to left
+  $keep-rtl: map.get($utility, rtl);
+
+  // 对于一条规则, 在产生核心的css属性赋值时, 额外附加的css变量赋值
+  $_extra-css-vars: map.get($utility, local-vars) !global;
+
+  // 对于一条规则, 在产生核心的css属性赋值时, 额外附加的css属性赋值
+  $_extra-css-props: map.get($utility, extra-props) !global;
+
+  // 为每段property产生适当的注解
+  /*!
+    #{map.get($utility, property) or map.get($utility,css-variable-name) 
+    or map.get($utility,class) or unknown}: #{$infix} 
+   */
+  @each $key, $value in $values {
+    // Don't prefix if value key is null (eg. with shadow class)
+    $cn-modifier: if($key, if($cn== "" and $infix== "", "", "-") + $key, "");
+
+    @if map.get($utility, rfs) {
+      // Inside the media query
+      @if $is-rfs-media-query {
+        $val: rfs-value($value);
+
+        // Do not render anything if fluid and non fluid values are the same
+        $value: if($val==rfs-fluid-value($value), null, $val);
+      } @else {
+        $value: rfs-fluid-value($value);
+      }
+    }
+
+    @if $value !=null {
+      @if $keep-rtl==false {
+        /* rtl:begin:remove */
+      }
+
+      @if $gen-css-var {
+        // 产生纯粹的单个css变量赋值
+        .#{$cn + $infix + $cn-modifier} {
+          #{$css-var-name}: #{$value};
+        }
+
+        @each $pseudo in $states or () {
+          .#{$cn + $infix + $cn-modifier}-#{$pseudo}:#{$pseudo} {
+            #{$css-var-name}: #{$value};
+          }
+        }
+      } @else {
+        // 为声明的核心属性($_properties代表, 可能是多个), 声明一条普通规则.
+        .#{$cn + $infix + $cn-modifier} {
+          @include -write-all($value);
+        }
+        @each $pseudo in $states or () {
+          // 为声明的核心属性($_properties代表, 可能是多个), 声明一条伪类规则.
+          .#{$cn + $infix + $cn-modifier}-#{$pseudo}:#{$pseudo} {
+            @include -write-all($value);
+          }
+        }
+      }
+      @if $keep-rtl==false {
+        /* rtl:end:remove */
+      }
+    }
+  }
+}
+
+// 在一个规则下,:
+// 1. 将给定的一个value赋值给属性(可能为多个), 但是这些属性拥有同样的值.
+// 2. 为所有的附加的css变量赋值
+// 3. 为所有的附加的css属性赋值
+@mixin -write-all($value) {
+  @each $prop in $_properties {
+    // 写附加的css变量, 同一个utility产生的多个规则, 这些css变量各自具有相等的值
+    @each $name, $v in ($_extra-css-vars or ()) {
+      --#{$prefix}#{$name}: #{$v};
+    }
+
+    // 写附加的css属性, 同一个utility产生的多个规则, 这些css属性各自具有相等的值
+    @each $p, $v in $_extra-css-props or () {
+      #{$p}: #{$v};
+    }
+
+    // 写核心css属性,每个规则下的该属性都不相等
+    #{$prop}: $value if($enable-important-utilities, !important, null);
+  }
+}

@@ -1,0 +1,71 @@
+﻿@page "/exercise/component-teaching/cascading-example"
+@using BackstageWa.Shared.Components.Teaching.Cascading
+@attribute [NavItemFlag(
+     Icon = "oi-phone",
+     Tooltip = "官方文档:级联值和参数",
+     Text = "cascading&parameter"
+)]
+
+
+<h3>
+    级联值和参数
+</h3>
+<details>
+    <summary>
+        简单用法: 为后代组件提供值
+    </summary>
+    <CascadingValue Value="ti" IsFixed="true">
+        <LayerOne />
+    </CascadingValue>
+    <button type="button" class="btn btn-outline-info" @onclick="_changeTheme">更换主题</button>
+</details>
+<details>
+    <summary>
+        使用 Name 属性区分, 以便嵌套的多层次的 CascadingValue 标签, 分别层叠多个值. 并同时配置有匿名层叠值
+    </summary>
+    <CascadingValue Value="ti">
+        <CascadingValue Value="first" Name="CasParm1">
+            <CascadingValue Value="second" Name="CasParm2">
+                <LayerOne />
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+</details>
+<details>
+    <summary>
+        跨组件层次结构传递数据
+    </summary>
+    <TabSet>
+        <Tab Title="First tab">
+            <h4>Greetings from the first tab!</h4>
+            <label>
+                <input type="checkbox" @bind="showThirdTab" />
+                Toggle third tab
+            </label>
+        </Tab>
+        <Tab Title="Second tab">
+            <h4>Hello from the second tab</h4>
+        </Tab>
+        @if (showThirdTab)
+        {
+            <Tab Title="Third tab">
+                <h4>Welcom to the disappearing third tab!</h4>
+                <p>Toggle this tab from the first tab.</p>
+            </Tab>
+        }
+    </TabSet>
+</details>
+@code {
+    private ThemeInfo ti = new() { ButtonClass = "btn-success" };
+    private string first = "hello, this is a string";
+    private DateTime second = DateTime.Now;
+
+    private void _changeTheme()
+    {
+        // 如果配置了 IsFixed = true, 将锁定级联值以及其内部属性, 所以下两句均不起作用
+        //ti.ButtonClass = ti.ButtonClass == "btn-success" ? "btn-dark" : "btn-success";
+        // ti = new() { ButtonClass = "btn-secondary" };
+    }
+
+    private Boolean showThirdTab;
+}

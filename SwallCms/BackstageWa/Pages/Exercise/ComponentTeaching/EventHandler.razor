@@ -1,0 +1,192 @@
+﻿@page "/exercise/component-teaching/event-handler"
+@attribute [NavItemFlag(
+     Icon = "oi-signal",
+     Tooltip = "事件处理",
+     Text = "event handler"
+)]
+@using ServerLib.Util.Event
+@using Microsoft.AspNetCore.Components
+@using BackstageWa.Shared.Components.Teaching.EventHandle
+
+<details>
+    <summary>
+        事件处理的简单概念
+    </summary>
+    <div>
+        <p>
+            current heading:<label class="fs-3 text-d-line-under text-d-blue"> @currentHeading</label>
+        </p>
+        <p>
+            <label>
+                New title
+                <input @bind="newHeading" />
+            </label>
+            <button @onclick="UpdateHeading">
+                Update heading
+            </button>
+        </p>
+        <p>
+            <label>
+                <input type="checkbox" @onchange="CheckedChanged" />
+                @checkedMessage
+            </label>
+        </p>
+    </div>
+</details>
+<details>
+    <summary>内置事件参数</summary>
+    <div>
+        @for (var i = 0; i < 4; i++)
+        {
+            <p>
+                <button type="button" class="btn btn-outline-primary w-80"
+                    @onclick="_reportPointerLocation">
+                    Where's my mouse pointer for this button?
+                </button>
+            </p>
+        }
+        <p>@_mousePointerMsg</p>
+    </div>
+</details>
+<details>
+    <summary>
+        自定义事件参数的简单示范
+    </summary>
+    <div>
+        @* 必须导入包含 EventHandler 的命名空间, intellisense 方能识别 onguoshievent *@
+        <button type="button" @onguoshievent="_onGuoshiEvent">Handle guoshi event</button>
+        <button id="guoshi-trigger" type="button">click here to trigger guoshi event of left button</button>
+    </div>
+</details>
+<details>
+    <summary>
+        自定义事件参数的复杂例子, 剪贴板粘贴
+    </summary>
+    <div>
+        <label>
+            Try pasting into the following text box:
+            <input @onguoshipaste="_onGuoshiPaste" />
+        </label>
+
+        <p>
+            @_pastingMsg
+        </p>
+    </div>
+</details>
+<details>
+    <summary>
+        使用 Lambda 表达式作为委托事件处理程序
+    </summary>
+    <div>
+        <h1>@_heading</h1>
+
+        <p>
+            <button @onclick="@(e => _heading = $"New heading at {DateTime.Now}!!!")">
+                Update heading
+            </button>
+        </p>
+    </div>
+</details>
+<details>
+    <summary>
+        Lambda 表达式, 结合 C#方法参数关闭附加值
+    </summary>
+    <div>
+        <h1>@_heading2</h1>
+
+        @for (var i = 1; i < 4; i++)
+        {
+            @*文档说,不要直接在 Lambda 表达式中使用循环变量,否则，所有 Lambda 表达式将使用相同的变量
+        其实无所谓
+        *@
+            @*var buttonNumber = i;*@
+
+            <p>
+                @*                <button class="btn btn-outline-primary w-80" @onclick="@(e => _updateHeading(e, buttonNumber))">
+            Button #@i
+            </button>*@
+                <button class="btn btn-outline-primary w-80" @onclick="@(e => _updateHeading(e, i))">
+                    Button #@i
+                </button>
+            </p>
+        }
+    </div>
+</details>
+<details>
+    <summary>
+        通过向子组件的 EventCallback(或泛型) 属性分配回调方法, 在子组件事件发生时, 执行父组件的方法
+    </summary>
+    <Child Title="Panel Title from Parent" OnClickCallback="_refreshClickPos">
+        Content of the child component is supplied by the parent component
+        <input type="text" class="form-control w-40 mb-2" value="@_currPos" />
+    </Child>
+</details>
+@code {
+    #region  事件处理的简单概念
+    private string currentHeading = "Initial heading";
+    private string? newHeading;
+
+    private string checkedMessage = "Not changed yet";
+    //    private bool isChecked;
+
+    //private ElementReference? cbxRef;
+
+    // 同步或异步均可
+    //private void UpdateHeading()
+    //{
+    //    currentHeading = $"{newHeading}!!!";
+    //}
+    private async Task UpdateHeading()
+    {
+        await Task.Delay(2000);
+        currentHeading = $"{newHeading}!!!";
+    }
+
+    private void CheckedChanged()
+    {
+        checkedMessage = $"Last changed at {DateTime.Now}";
+    }
+    #endregion
+
+    #region 内置事件参数
+    private string _mousePointerMsg = "not click yet";
+    private void _reportPointerLocation(MouseEventArgs e)
+    {
+        _mousePointerMsg = $"Mouse coordinates:screen({e.ScreenX},{e.ScreenY}),local({e.OffsetX},{e.OffsetY})";
+    }
+    #endregion
+
+    // 自定义事件参数之响应
+    private void _onGuoshiEvent(GuoshiEventArgs args)
+    {
+        Console.WriteLine($"prop1:{args.Guoshi_first_prop},prop2:{args.Guoshi_second_prop},prop3:{args.Guoshi_third_prop}");
+    }
+
+    // 自定义事件参数的复杂例子: 剪贴板粘贴
+    private string? _pastingMsg;
+    private void _onGuoshiPaste(GuoshiPasteEventArgs e)
+    {
+        _pastingMsg = $"At {e.EventTimestamp.ToShortTimeString()},you pasted:{e.PastedData}";
+    }
+
+    #region lambda 表达式作为事件响应
+    private string _heading = "Initial heading";
+
+    //  Lambda 表达式, 结合 C#方法参数关闭附加值
+    private string _heading2 = "Select a button to learn its position";
+    private void _updateHeading(MouseEventArgs e, int buttonNumber)
+    {
+        _heading2 = $"Selected #{buttonNumber} at {e.ClientX}:{e.ClientY}";
+    }
+    #endregion
+
+    #region 使用子组件的 EventCallback 属性
+    private string? _currPos;
+    private void _refreshClickPos(MouseEventArgs e)
+    {
+        _currPos = $"(screen:{e.ScreenX},{e.ScreenY});(page:{e.PageX},{e.PageY});" +
+        $"(offset:{e.OffsetX},{e.OffsetY}).deltaY={e.ScreenY-e.PageY}";
+    }
+
+    #endregion
+}

@@ -1,0 +1,159 @@
+﻿@inject IJSRuntime JS
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">BackstageWa</a>
+        <button id="menu-icon" title="Navigation menu" class="navbar-toggler" data-bs-toggle="collapse"
+                data-bs-target="#nav-menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+@*<div class="collapse" @onclick="ToggleNavMenu" id="nav-menu">
+    <nav class="flex-column">
+        <RazorPageItems Nsp="BackstageWa.Pages" Asm="@Assembly.GetExecutingAssembly()"></RazorPageItems>
+    </nav>
+</div>*@
+<div class="collapse" @onclick="ToggleNavMenu" id="nav-menu">
+    <RazorPageLayer Nsp="@startNsp">
+        <RazorPageItems Nsp="@startNsp" LeftIndent="5"></RazorPageItems>
+    </RazorPageLayer>
+</div>
+@*<button type="button" class="btn btn-success w-65" @onclick="TestInfo">测试</button>*@
+@code {
+    private string startNsp = "BackstageWa.Pages";
+
+
+    private void ToggleNavMenu()
+    {
+        // 应该模拟点击 button, 否则只是修改整个菜单的　class, 将失去动画
+        JS.InvokeVoidAsync("simulateCollapseButtonEvent", "click");
+        JS.InvokeVoidAsync("console.log", "this text is from c#");
+
+
+    }
+
+    #region 测试部分
+    private void TestInfo()
+    {
+
+        _RegexDemo1();
+
+        _showStructure();
+
+        Console.WriteLine("this is the end");
+    }
+
+    ///<summary>
+    /// 显示 Assembly 的结构: 命名空间及其类型
+    ///</summary>
+    private void _showStructure()
+    {
+        Assembly asm = Assembly.GetExecutingAssembly();
+        _showTypesWithoutNamespace(asm);
+
+        _showTypesWithinNamespace(asm);
+    }
+
+    ///<summary>
+    /// 显示各个命名空间及其各自的类型
+    ///</summary>
+    private void _showTypesWithinNamespace(Assembly asm, string root = "", int tabs = 0)
+    {
+        string[] childnps = asm.GetChildNamespaces(root);
+        foreach (string s in childnps)
+        {
+            ConsoleProxy.WriteTabs(tabs);
+
+            Console.WriteLine(s);
+
+            Type[] tps = asm.GetOwnTypes(s);
+            foreach (Type t in tps)
+            {
+                // 全部显示
+                //ConsoleProxy.WriteTabs(tabs + 1);
+                //Console.WriteLine($"{t.FullName}------class");
+
+                // 只显示继承于 ComponentBase 的类型(即 Razor 页面的后台class)
+                //if (t.BaseType == typeof(Microsoft.AspNetCore.Components.ComponentBase))
+                //{
+                //    ConsoleProxy.WriteTabs(tabs + 1);
+                //    Console.WriteLine($"{t.FullName}------class");
+                //}
+
+                // 只显示继承于 ComponentBase 的类型(即 Razor 页面的后台class), 同时需要有 nav flag 属性
+                if (t.BaseType == typeof(Microsoft.AspNetCore.Components.ComponentBase))
+                {
+                    ConsoleProxy.WriteTabs(tabs + 1);
+                    Console.Write($"{t.FullName}------class.");
+                    var navflag = t.GetCustomAttribute<NavItemFlagAttribute>();
+                    if (null == navflag)
+                    {
+                        Console.WriteLine("---not for a nav item.");
+                    }
+                    else
+                    {
+                        Console.WriteLine(navflag);
+                    }
+                }
+            }
+            _showTypesWithinNamespace(asm, s, tabs + 1);
+        }
+    }
+
+    ///<summary>
+    /// 显示不属于任何命名空间的类型
+    ///</summary>
+    private void _showTypesWithoutNamespace(Assembly asm, int tabs = 0)
+    {
+        Type[] tps = asm.GetOwnTypes();
+        foreach (Type t in tps)
+        {
+            //    if (t.BaseType == typeof(Microsoft.AspNetCore.Components.ComponentBase))
+            //     {
+            ConsoleProxy.WriteTabs(tabs);
+            Console.WriteLine($"{t.FullName}------class");
+            //     }
+        }
+    }
+
+
+    ///<summary>
+    /// 来自 msdn 的正则表达式示例
+    ///</summary>
+    private void _RegexDemo1()
+    {
+
+        // Define a regular expression for repeated words.
+        Regex rx1 = new Regex(@"\b(?<word>\w+)\s+(\k<word>)\b",
+          RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        string temp = "brOwn";
+        Regex rx2 = new Regex(@$"\b{temp}\b", RegexOptions.IgnoreCase);
+
+
+        // Define a test string.
+        string text = "The the quick brown fox  fox jumps BrowN over the lazy dog dog.";
+
+        // Find matches.
+        MatchCollection matches = rx1.Matches(text);
+
+        // Report the number of matches found.
+        Console.WriteLine("{0} matches found in:\n   {1}",
+                          matches.Count,
+                          text);
+
+        // Report on each match.
+        foreach (Match match in matches)
+        {
+            GroupCollection groups = match.Groups;
+            Console.WriteLine("'{0}' repeated at positions {1} and {2}",
+                              groups["word"].Value,
+                              groups[0].Index,
+                              groups[1].Index);
+        }
+    }
+
+    #endregion
+}

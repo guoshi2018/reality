@@ -1,0 +1,28 @@
+﻿@page "/exercise/di/timetravel-demo2"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-clock",
+     IconAtRear = false,
+     //   LinkTo = "/exercise/di/timetravel-demo",
+     Text = "let us test di again",
+     Tooltip = ""
+)]
+@inherits OwningComponentBase<ITimeTravel>
+@inject ITimeTravel Tt
+
+<h1><code>OwningComponentBase</code> Example, using Generic version</h1>
+<h3>
+    导航到另一个组件并返回, Tt2 变化, Tt 不变
+</h3>
+<ul>
+    <li>Tt.DT, use dependence inject: @Tt.DT</li>
+    <li>Tt2.DT, use service property: @Service.DT</li>
+    <li>Tt == Service property:@(Tt == Service)</li>
+</ul>
+<h3>
+    即使是泛型的 OwningComponentBase, ScopedServices 属性可用，因此应用可获取其他类型的服务（如有必要）
+</h3>
+
+@code {
+
+}

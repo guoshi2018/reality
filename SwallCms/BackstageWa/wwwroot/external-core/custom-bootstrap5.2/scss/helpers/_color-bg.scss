@@ -1,0 +1,69 @@
+@use "variables" as *;
+@use "sundry" as *;
+@use "functions" as *;
+@use "sass:map";
+@use "mixins/breakpoints" as *;
+// stylelint-disable function-name-case
+
+// 原版, 无相对于.bg-*的四种颜色: body white black transparent
+// All-caps `RGBA()` function used because of this Sass bug: https://github.com/sass/node-sass/issues/2251
+// @each $color, $value in $theme-colors {
+//   $color-rgb: to-rgb($value);
+
+//   .text-bg-#{$color} {
+//     color: color-contrast($value) if($enable-important-utilities, !important, null);
+//     background-color: RGBA($color-rgb, var(--#{$prefix}bg-opacity, 1))
+//       if($enable-important-utilities, !important, null);
+//   }
+// }
+
+// 经修正, 可以有这4种.text-bg-*类, 但效果不是很好.
+$full-colors: map.merge(
+  $theme-colors,
+  (
+    "body": $body-color,
+    "white": $white,
+    "black": $black,
+    "transparent": transparent,
+  )
+);
+
+// 原版: 前景色无法通过类似于背景色的方式修改其不透明度
+// @each $color, $value in $full-colors {
+//   $color-rgb: to-rgb($value);
+
+//   .text-bg-#{$color} {
+//     color: color-contrast($value) if($enable-important-utilities, !important, null);
+//     background-color: RGBA($color-rgb, var(--#{$prefix}bg-opacity, 1))
+//       if($enable-important-utilities, !important, null);
+//   }
+// }
+
+// 前景色支援 .text-opacity-(0,25,50,...) 修改其不透明度
+// @each $color, $value in $full-colors {
+//   $bg-color-rgb: to-rgb($value);
+//   $text-color-rgb: to-rgb(color-contrast($value));
+//   $imp: if($enable-important-utilities, !important, null);
+
+//   .text-bg-#{$color} {
+//     color: RGBA($text-color-rgb, var(--#{$prefix}text-opacity, 1)) $imp;
+//     background-color: RGBA($bg-color-rgb, var(--#{$prefix}bg-opacity, 1)) $imp;
+//   }
+// }
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+  @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+    @each $color, $value in $full-colors {
+      $bg-color-rgb: to-rgb($value);
+      $text-color-rgb: to-rgb(color-contrast($value));
+      $imp: if($enable-important-utilities, !important, null);
+
+      .text#{$infix}-bg-#{$color} {
+        color: RGBA($text-color-rgb, var(--#{$prefix}text-opacity, 1)) $imp;
+        background-color: RGBA($bg-color-rgb, var(--#{$prefix}bg-opacity, 1)) $imp;
+      }
+    }
+  }
+}

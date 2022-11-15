@@ -1,0 +1,25 @@
+﻿@*
+    演示如何设置按钮的 onclick 处理程序以从示例的 父级页面 接收
+    EventCallback 委托。 EventCallback 是用 MouseEventArgs 键入的，
+    这适用于来自外围设备的 onclick 事件。
+*@
+<div>
+    <h4>@Title</h4>
+    <div>
+        @ChildContent
+        <button @onclick="OnClickCallback" class="btn btn-outline-primary w-40">
+            click to trigger a parent component method
+        </button>
+    </div>
+
+</div>
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+}

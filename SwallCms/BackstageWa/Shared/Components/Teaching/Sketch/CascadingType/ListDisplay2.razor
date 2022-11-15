@@ -1,0 +1,17 @@
+﻿@typeparam TExample
+
+<h5>组件类型参数:@typeof(TExample)</h5>
+@if (ExampleList is not null)
+{
+    <ul style="color:red">
+        @foreach (var item in ExampleList)
+        {
+            <li>@item</li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<TExample>? ExampleList { get; set; }
+}

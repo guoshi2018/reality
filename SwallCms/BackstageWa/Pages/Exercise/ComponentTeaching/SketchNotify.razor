@@ -1,0 +1,96 @@
+﻿@page "/exercise/component-teaching/sketch-notify"
+@attribute [NavItemFlag(
+     Icon = "oi-pin",
+     Tooltip = "在外部调用组件方法, 以更新状态",
+     Text = "官方文档:组件之外部更新"
+)]
+@implements IDisposable
+@inject NotifierService Notifier
+@inject TimerService Timer
+<details>
+    <summary>
+        <ul>
+            <li>
+                在外部调用组件方法, 以更新状态.
+            </li>
+            <li>
+                在任意给定的时间点，工作只在一个线程上执行，这会造成单个逻辑线程的印象。
+            </li>
+            <li>
+                所以, 定时器启动后, 即进入TimerService 的 while 无限循环线程, 
+            </li>
+        </ul>
+
+
+
+    </summary>
+    <div>
+        <h1>Receive Notifications</h1>
+
+        <h2>Timer Service</h2>
+
+        <button @onclick="OperateTimer">@(_isRunning ? "Stop Timer" : "Start Timer")</button>
+        <button @onclick="DoSomething" type="button" class="btn btn-outline-dark">
+            定时器启动后, 页面上的任何按钮都无响应
+        </button>
+
+        <h2>Notifications</h2>
+
+        <p>
+            Status:
+            @if (lastNotification.key is not null)
+            {
+                <span>@lastNotification.key = @lastNotification.value</span>
+            }
+            else
+            {
+                <span>Awaiting first notification</span>
+            }
+        </p>
+    </div>
+</details>
+@code {
+    private (string key, int value) lastNotification;
+    private Boolean _isRunning = false;
+
+    protected override void OnInitialized()
+    {
+        Notifier.Notify += OnNotify;
+    }
+
+    public async Task OnNotify(string key, int value)
+    {
+        await InvokeAsync(() =>
+        {
+            lastNotification = (key, value);
+            StateHasChanged();
+        });
+    }
+
+    private async Task OperateTimer()
+    {
+        if (!_isRunning)
+        {
+            _isRunning = true;
+            await Timer.Start();
+            Console.WriteLine("Timer start."); // 这句被 await 拦截, 没有机会执行
+        }
+        else
+        {
+            Timer.Stop();
+            Console.WriteLine("Timer stop");
+            _isRunning = false;
+        }
+    }
+
+
+    private void DoSomething()
+    {
+        Console.WriteLine(DateTime.Now.ToString());
+    }
+
+    public void Dispose()
+    {
+        Notifier.Notify -= OnNotify;
+    }
+}

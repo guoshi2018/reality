@@ -1,0 +1,30 @@
+// Credit: Nicolas Gallagher and SUIT CSS.
+@use "variables" as *;
+@use "sundry" as *;
+
+.ratio {
+  position: relative;
+  width: 100%;
+
+  &::before {
+    display: block;
+    padding-top: var(--#{$prefix}aspect-ratio);
+    content: "";
+    //content: "-----------------"; // 原版是"" .
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    //  display: none; //取消注释, 则可以看到上面的长横线, 可洞悉工作原理
+  }
+}
+
+@each $key, $ratio in $aspect-ratios {
+  .ratio-#{$key} {
+    --#{$prefix}aspect-ratio: #{$ratio};
+  }
+}

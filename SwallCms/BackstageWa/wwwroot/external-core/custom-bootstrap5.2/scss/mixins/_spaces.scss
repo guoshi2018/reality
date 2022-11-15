@@ -1,0 +1,29 @@
+// 新增文件
+
+@use "sundry" as *;
+@use "variables" as *;
+@use "breakpoints" as *;
+@use "sass:map";
+
+// 添加水平方向和竖直方向的gutter控制class, 到指定的规则下面.
+// &.g-mq-(0,1...5), &.gx-mq-(0,1...5), &.gy-mq-(1,2,...5).
+// 注意控制的是 css 变量: --bs-gutter-x 和 --bs-gutter-y
+@mixin make-gutters($breakpoints: $grid-breakpoints) {
+	@each $breakpoint in map.keys($breakpoints) {
+		$infix: breakpoint-infix($breakpoint, $breakpoints);
+
+		@include media-breakpoint-up($breakpoint, $breakpoints) {
+			@each $key, $value in $gutters {
+				&.g#{$infix}-#{$key},
+				&.gx#{$infix}-#{$key} {
+					--#{$prefix}gutter-x: #{$value};
+				}
+
+				&.g#{$infix}-#{$key},
+				&.gy#{$infix}-#{$key} {
+					--#{$prefix}gutter-y: #{$value};
+				}
+			}
+		}
+	}
+}

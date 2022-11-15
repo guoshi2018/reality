@@ -1,0 +1,76 @@
+﻿@page "/exercise/Error/Raiser"
+@attribute [NavItemFlag(
+     Icon = "oi-move",
+     Text = "error catch"
+)]
+@inject ILogger<Raiser> lg
+@* 无法自行捕获 *@
+@*<ErrorBoundary>
+    <ChildContent>
+        <details open>
+            <summary>
+                Environment example
+            </summary>
+            <form class="container">
+                <button type="button" class="btn btn-outline-dark" @onclick="_RaiseAnDivideError">
+                    1. 除0错误间接引发的异常, 不同于 App.razor 中 Route 组件 NotFound 错误
+                </button>
+                <button type="button" class="btn btn-outline-info" @onclick="_RaiseAnExcepiton">
+                    2. 直接手工引发真正的异常, 同上
+                </button>
+            </form>
+        </details>
+    </ChildContent>
+    <ErrorContent>
+        <p class="blazor-error-boundary">
+            自行处理的异常:
+        </p>
+    </ErrorContent>
+</ErrorBoundary>*@
+
+@* 利用自定义组件 Error, 结合它在 App.razor 中的布置, 可以达到自行处理错误的目的. *@
+<details open>
+    <summary>
+        Environment example
+    </summary>
+    <form class="container">
+        <button type="button" class="btn btn-outline-dark" @onclick="_RaiseAnDivideError">
+            1. 除0错误间接引发的异常, 尝试使用 自定义错误组件的层叠方式处理(即备用全局异常处理)
+        </button>
+        <button type="button" class="btn btn-outline-info" @onclick="_RaiseAnExcepiton">
+            2. 直接手工引发真正的异常,尝试使用布局页的 ErrorBoundary 处理
+        </button>
+    </form>
+</details>
+
+
+@code {
+    [CascadingParameter]
+    public Error? error { get; set; }
+
+    //除0错误
+    private void _RaiseAnDivideError()
+    {
+        try
+        {
+            int a = 5;
+            int y = 0;
+            int x = a / y;
+            Console.WriteLine($"the result is {x} ");
+        }
+        catch (Exception ex)
+        {
+            // Console.WriteLine($"发生错误:{ex.Message}");
+            error?.ProcessError(ex);
+        }
+
+    }
+    // 手工异常
+    private void _RaiseAnExcepiton()
+    {
+        Console.WriteLine("now raise an exception....");
+        throw new ArgumentNullException("an mono exception");
+    }
+
+
+}

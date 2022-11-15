@@ -1,0 +1,25 @@
+// scss-docs-start clearfix
+// @mixin clearfix() {
+//   &::after {
+//     display: block;
+//     clear: both;
+//     content: "";
+//   }
+// }
+// scss-docs-end clearfix
+
+//更细腻的clearfix, 摘自 <<Html5与Css3基础教程>>
+@mixin clearfix() {
+
+  &::after,
+  &::before {
+    content: "";
+    display: table;
+  }
+
+  &::after {
+    clear: both;
+  }
+
+  *zoom:1;
+}

@@ -1,0 +1,262 @@
+﻿@page "/exercise/component-teaching/data-binding"
+@attribute [NavItemFlag(
+     Icon = "oi-share",
+     Text = "data bind",
+     Tooltip = "数据绑定"
+)]
+@using System.Globalization
+@using BackstageWa.Shared.Components.Teaching.Binding
+@using BackstageWa.Shared.Components.Teaching.Binding.Nesting
+
+<details>
+    <summary>
+        默认情况下,onchange事件引起更新, 即 input 元素失去焦点时更新,
+    </summary>
+    <div>
+        <p>
+            通用写法 @@bind-{PROPERTY}: <input type="text" @bind-value="inputValue" />
+        </p>
+        <p>
+            简写, 因为 @@bind 默认绑定的是 value. 绑定到字段 inputValue:<input type="text" @bind="inputValue" />
+        </p>
+        <p>
+            绑定到读写属性 InputValue:<input type="text" @bind="InputValue" />
+        </p>
+        <p>
+            绑定的原理: <input type="text" value="@InputValue" @onchange="@((ChangeEventArgs __e)=>InputValue = __e?.Value?.ToString())" />
+        </p>
+        <ul>
+            <li>字段<code>inputValue:</code>@inputValue</li>
+            <li>属性<code>InputValue:</code>@InputValue</li>
+        </ul>
+    </div>
+</details>
+<details>
+    <summary>
+        指定事件发生时更新: @@bind:event="{EVENT}", 以下, 指定在输入时即时更新
+    </summary>
+    <div>
+        <p>
+            <input @bind:event="oninput" @bind="InputValue" />
+        </p>
+        <p>
+            <code>InputValue:</code>@InputValue
+        </p>
+    </div>
+</details>
+
+<details>
+    <summary>
+        select 元素的绑定, 以下为等效的两种方式
+    </summary>
+    <div>
+        <p>
+            <label>
+                Select one or more cars:
+                <select @onchange="_selectedCarsChanged" multiple>
+                    <option value="audi">Audi</option>
+                    <option value="jeep">Jeep</option>
+                    <option value="opel">Opel</option>
+                    <option value="saab">Saab</option>
+                    <option value="volvo">Volvo</option>
+                </select>
+            </label>
+        </p>
+
+        <p>
+            Selected Cars: @string.Join(", ", SelectedCars)
+        </p>
+
+        <p>
+            <label>
+                Select one or more cities:
+                <select @bind="SelectedCities" multiple>
+                    <option value="bal">Baltimore</option>
+                    <option value="la">Los Angeles</option>
+                    <option value="pdx">Portland</option>
+                    <option value="sf">San Francisco</option>
+                    <option value="sea">Seattle</option>
+                </select>
+            </label>
+        </p>
+
+        <span>
+            Selected Cities: @string.Join(", ", SelectedCities)
+        </span>
+    </div>
+</details>
+
+<details>
+    <summary>
+        将 input  绑定到非 string 字段: 值的回退. 注意 type 始终是默认的 text
+    </summary>
+    <div>
+        <p>
+            绑定到 int 字段(默认的onchange方式): <input @bind="_if1" />
+        </p>
+        <p>
+            绑定到 int 字段(采用oninput方式):<input @bind:event="oninput" @bind="_if1" />
+        </p>
+        <p>
+            绑定到 double 字段(默认的onchange方式): <input @bind="_df1" />
+        </p>
+        <p>
+            绑定到 double 字段(采用oninput方式):<input @bind:event="oninput" @bind="_df1" />
+        </p>
+        <p>
+            绑定到 DateTime 字段(默认的onchange方式), 不设置格式:<input @bind="_startDate" />
+        </p>
+        <p>
+            绑定到 DateTime 字段(默认的onchange方式), 设置格式:<code>yyyy-MM-dd</code>:
+            <input @bind="_startDate" @bind:format="yyyy-MM-dd" />
+        </p>
+        <p>
+            绑定到 DateTime 字段(采用oninput方式), 不设置格式:<input @bind="_startDate" @bind:event="oninput" />
+        </p>
+        <p>
+            绑定到 DateTime 字段(采用oninput方式), 设置格式:<code>yyyy-MM-dd</code>:
+            <input @bind="_startDate" @bind:format="yyyy-MM-dd" @bind:event="oninput" />
+        </p>
+        <p>
+            如果显示指定 html 属性 type="date"，文档说, 只有使用 yyyy-MM-dd 日期格式才能使绑定正常工作, 其实不然:
+            <ul>
+                <li>不指定 bind:format : <input type="date" @bind="_startDate" /></li>
+                <li>指定 bind:format : <input type="date" @bind="_startDate" @bind:format="yyyy-MM-dd" /></li>
+            </ul>
+
+        </p>
+        <ul>
+            <li>int 型字段<code>_if1:</code>@_if1</li>
+            <li>double 型字段<code>_df1:</code>@_df1</li>
+            <li>DateTime 型字段<code>_startDate:</code>@_startDate</li>
+        </ul>
+    </div>
+</details>
+
+<details>
+    <summary>自定义绑定格式,需要结合 getter / setter, 分别演示 onchange / oninput 版本</summary>
+    <div>
+        <p>
+            Decimal value (±0.000 format), using onchange by default:
+            <input @bind="Df2" />
+        </p>
+        <p>
+            Decimal value (±0.000 format), using oninput:
+            <input @bind="Df2" @bind:event="oninput" />
+        </p>
+        <p>
+            <code>decimal value</code>:@_df2
+        </p>
+    </div>
+</details>
+
+<details>
+    <summary>
+        与自定义组件参数的绑定
+    </summary>
+    <div>
+        <h1>Parent Component</h1>
+
+        <p>Parent <code>year</code>: @year</p>
+
+        <button @onclick="UpdateYear">Update Parent <code>year</code></button>
+
+        <ul>
+            <li>
+                父组件到子组件的单向绑定, 此时在 Child 内部的更新无效, 即使具备下面说的委托: <Child Year="year" />
+            </li>
+            <li>
+                父组件与子组件的双向绑定,  需要子组件具备 {PROPERTY}Changed 委托.
+                <Child @bind-Year="year" />
+            </li>
+        </ul>
+
+    </div>
+</details>
+
+<details>
+    <summary>
+        稍微复杂一点的双向绑定的 password 例子
+    </summary>
+    <div>
+        <Password @bind-Pwd="password" PlaceHolder="@ph" />
+
+        <p>
+            <code>password</code>: @password
+        </p>
+    </div>
+</details>
+
+<details>
+    <summary>
+        嵌套子组件的双向绑定数据演示
+    </summary>
+    <div>
+        <p>Parent Message: <b>@_parentMsg</b></p>
+
+        <p>
+            <button @onclick="_changeValue">Change from Parent</button>
+        </p>
+
+        <NestedChild @bind-ChildMessage="_parentMsg" />
+    </div>
+</details>
+@code {
+    // input type=text  绑定
+    private string? inputValue;
+    private string? InputValue { get; set; }
+
+    // select 绑定
+    public string[] SelectedCars { get; set; } = new string[] { };
+    public string[] SelectedCities { get; set; } = new string[] { };
+    private void _selectedCarsChanged(ChangeEventArgs e)
+    {
+        if (e.Value is not null)
+        {
+            SelectedCars = (string[])e.Value;
+        }
+    }
+
+    // 非 string 类型的绑定
+    private int _if1;
+    private double _df1;
+    private DateTime _startDate = new(2020, 08, 10);
+
+    #region  自定义绑定格式
+    private readonly NumberStyles sty = NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign;
+    private readonly CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
+    private decimal _df2 = 1.1m; // m 或 M  均可
+    private string Df2
+    {
+        get => _df2.ToString("0.000", ci);
+        set
+        {
+            if (Decimal.TryParse(value, sty, ci, out decimal result))
+            {
+                _df2 = Math.Round(result, 3);
+            }
+        }
+    }
+
+    #endregion
+
+    #region 与自定义组件参数的绑定
+    private Random r = new();
+    private int year = 1979;
+    private void UpdateYear()
+    {
+        year = r.Next(1950, 1990);
+    }
+    #endregion
+
+    // password 双向绑定示例
+    private string password = "init password";
+    private readonly string ph = "input your password";
+
+    // 嵌套组件的双向绑定示例
+    private string _parentMsg = "Initial value set in parent";
+    private void _changeValue()
+    {
+        _parentMsg = $"Set in Parent {DateTime.Now}";
+    }
+}

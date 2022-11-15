@@ -1,0 +1,70 @@
+﻿@inject IJSRuntime JS
+
+<div class="ms-@LeftIndent">
+
+    @foreach (Type t in Asm.GetOwnTypes(Nsp))
+    {
+        //if (t.BaseType == typeof(Microsoft.AspNetCore.Components.ComponentBase))
+        if (t.IsSubclassOf(typeof(ComponentBase)))
+        {
+            var navflag = t.GetCustomAttribute<NavItemFlagAttribute>();
+
+            if (navflag?.Enabled == true)
+            {
+                // LinkTo 默认与 @page 指令相同
+                if (navflag.LinkTo == String.Empty)
+                {
+                    var routeAttr = t.GetCustomAttribute<RouteAttribute>();
+                    if (routeAttr != null)
+                    {
+                        navflag.LinkTo = routeAttr.Template;
+                    }
+                }
+                // 仅仅是该命名空间下的类型对应的页面 razor
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link justify-content-between" data-bs-placement="right" href="@navflag.LinkTo"
+                 data-bs-title="@navflag.Tooltip" data-bs-toggle="tooltip">
+                        <span class="oi @navflag.Icon @(navflag.IconAtRear?"order-last":"")" aria-hidden="true"></span>
+                        <label>@navflag.Text</label>
+                    </NavLink>
+                </div>
+            }
+        }
+    }
+    @foreach (string childnsp in Asm.GetChildNamespaces(Nsp))
+    {
+        <RazorPageLayer Nsp="@childnsp">
+            <RazorPageItems LeftIndent="5" Nsp="@childnsp"></RazorPageItems>
+        </RazorPageLayer>
+    }
+</div>
+
+@code {
+
+
+
+    /// <summary>
+    /// 当前层级相对于其容器的缩进. 随着层级的增加, 相对缩进不变, 但总缩进会增加
+    /// </summary>
+    [Parameter]
+    public int LeftIndent { get; set; } = 0;
+
+    /// <summary>
+    /// 指定要在哪个命名空间下进行 Razor 页面的导航项目显示
+    /// </summary>
+    [Parameter]
+    public string Nsp { get; set; } = "";
+
+    /// <summary>
+    /// 指定要在哪个程序集下查找相关的 Razor 页面类
+    /// </summary>
+    [Parameter]
+    public Assembly Asm { get; set; } = Assembly.GetExecutingAssembly();
+
+
+
+
+
+
+
+}

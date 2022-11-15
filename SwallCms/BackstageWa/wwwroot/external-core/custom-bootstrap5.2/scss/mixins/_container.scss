@@ -1,0 +1,32 @@
+@use "sundry" as *;
+@use "variables" as *;
+@use "spaces";
+// Container mixins
+
+// @mixin make-container($gutter: $container-padding-x) {
+//   --#{$prefix}gutter-x: #{$gutter};
+//   --#{$prefix}gutter-y: 0;
+//   width: 100%;
+//   padding-right: calc(var(--#{$prefix}gutter-x) * 0.5); // stylelint-disable-line function-disallowed-list
+//   padding-left: calc(var(--#{$prefix}gutter-x) * 0.5); // stylelint-disable-line function-disallowed-list
+//   margin-right: auto;
+//   margin-left: auto;
+// }
+
+// 对称更正竖直方向padding,
+@mixin make-container($gutter-x: $container-padding-x, $gutter-y: $container-padding-y) {
+  --#{$prefix}gutter-x: #{$gutter-x};
+  --#{$prefix}gutter-y: #{$gutter-y};
+  width: 100%; // 这样可能会造成子级(例如.row)撑破container, 见readme.md
+  //max-width: 100%;
+  $x: calc(var(--#{$prefix}gutter-x) * 0.5);
+  $y: calc(var(--#{$prefix}gutter-y) * 0.5);
+  padding-right: $x; // stylelint-disable-line function-disallowed-list
+  padding-left: $x; // stylelint-disable-line function-disallowed-list
+  padding-top: $y;
+  padding-bottom: $y;
+  margin-right: auto;
+  margin-left: auto;
+
+  @include spaces.make-gutters();
+}

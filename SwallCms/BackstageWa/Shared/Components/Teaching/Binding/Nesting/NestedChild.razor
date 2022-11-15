@@ -1,0 +1,33 @@
+﻿<div class="border rounded m-1 p-1">
+    <h2>Child Component</h2>
+
+    <p>Child Message: <b>@ChildMessage</b></p>
+
+    <p>
+        <label>点击将修改传递到上级, 而传递到下级的任务, 则由 BoundValue 的 getter 完成</label>
+        <button @onclick="ChangeValue">Change from Child</button>
+    </p>
+
+    <NestedGrandchild @bind-GrandchildMessage="BoundValue" />
+</div>
+
+@code {
+    [Parameter]
+    public string? ChildMessage { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ChildMessageChanged { get; set; }
+
+    private string BoundValue
+    {
+        get => ChildMessage ?? string.Empty;
+        // setter 负责接收来自下级的修改
+        set => ChildMessageChanged.InvokeAsync(value);
+    }
+
+    private async Task ChangeValue()
+    {
+        await ChildMessageChanged.InvokeAsync(
+            $"Set in Child {DateTime.Now}");
+    }
+}

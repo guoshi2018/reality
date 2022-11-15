@@ -1,0 +1,125 @@
+﻿@page "/exercise/logger/common"
+@attribute [NavItemFlag(
+     Icon = "oi-moon",
+     Text = "common usage"
+//   Enabled = true,
+//   IconAtRear = false
+// LinkTo = "/exercise/logger/common"　
+//     Tooltip = ""
+//    ,
+)]
+@inject ILogger<Common> logger
+@inject ILoggerFactory loggerFactory
+
+<button class="@btncls btn-primary" @onclick:preventDefault @onclick="_DologgingUsingILogger">
+    使用依赖注入的 ILogger &lt;Common&gt;  尝试写入所有日志
+</button>
+
+<button class="@btncls btn-secondary" @onclick:preventDefault @onclick="_DologgingUsingILoggerFactory">
+    使用日志工厂创建与 Common 类相关联的 logger 尝试写入所有日志
+</button>
+
+<button class="@btncls btn-success" @onclick="_DologgingUsingCustomCategory">
+    使用日志工厂创建指定种类(Category)的 logger, 尝试写入 warning / information 级别的日志,
+</button>
+
+<button class="@btncls btn-outline-info" @onclick="_DologgingUsingLogMessageTemplate">
+    创建另一个种类的 logger, 采用消息模板写, 并与上一个种类的 logger 对比, 以测试 program.cs 的过滤.
+</button>
+
+<button class="@btncls btn-outline-dark" @onclick="_DologgingUsingLogEventId">
+    使用依赖注入的 ILogger &lt;Common&gt; 记录 event id
+</button>
+
+<button class="@btncls btn-outline-primary" @onclick="_DologgingUsingExceptionParameter">
+    使用依赖注入的 logger ,模拟发生异常是, 结合异常参数,记录
+</button>
+
+
+@code {
+    private string btncls = "btn w-100 mb-3";
+
+
+    /// <summary>
+    /// 使用依赖注入的 ILogger<Common>  尝试写入所有日志
+    /// </summary>
+    private void _DologgingUsingILogger()
+    {
+        _logAllLevels(logger);
+    }
+    /// <summary>
+    /// 使用日志工厂创建与 Common 类相关联的 logger 尝试写入所有日志
+    /// </summary>
+    private void _DologgingUsingILoggerFactory()
+    {
+        ILogger<Common> lg = loggerFactory.CreateLogger<Common>();
+        _logAllLevels(lg);
+    }
+    /// <summary>
+    /// 使用日志工厂创建指定种类(Category)的 logger, 尝试写入 warning / information 级别的日志,
+    /// 在 program.cs 中配置过滤: 不写入其他种类 和(或) 不写入本种类的某个级别的日志
+    /// 不能调用 _logAllLevels(lg), lg 不一样
+    /// </summary>
+    private void _DologgingUsingCustomCategory()
+    {
+        var lg = loggerFactory.CreateLogger("GuoshiCustomCategory"); // ok
+
+        // 如果 program.cs 中配置了过滤, 则只有第二个被记录
+        lg.LogWarning("hey, warning level, custom log category of guoshi");
+        lg.LogInformation("yeah, infomation level,custom log category of guoshi");
+    }
+    /// <summary>
+    /// 创建另一个种类的 logger, 采用消息模板写, 并与上一个种类的 logger 对比, 以测试 program.cs 的过滤.
+    /// </summary>
+    private void _DologgingUsingLogMessageTemplate()
+    {
+        // 结合自定义类别:
+        //  如果 program.cs 中配置了过滤,
+        var lg = loggerFactory.CreateLogger("AnotherCustomCtgForMsgTpl");
+        lg.LogWarning(1937, "here you go, {dt1},{dt2}. which is right?", DateTime.UtcNow, DateTime.Now);
+        lg.LogCritical(2028, "this is a critical log from another-custom-ctg-for-msg-tpl");
+    }
+    /// <summary>
+    /// 使用依赖注入的 ILogger<Common> 记录 event id
+    /// </summary>
+    private void _DologgingUsingLogEventId()
+    {
+        logger.LogWarning(2022, "这是2022年最新warning");
+    }
+    /// <summary>
+    /// 使用依赖注入的 logger ,模拟发生异常, 结合异常参数,记录
+    ///  </summary>
+    private void _DologgingUsingExceptionParameter()
+    {
+        try
+        {
+            throw new OperationCanceledException("Skip some steps");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Exception occur:{msg}", ex.Message);
+        }
+    }
+
+
+
+
+
+    private void _logAllLevels(ILogger<Common> lg)
+    {
+        // 级别由低到高: 0,1,2,3,4,5
+        // 无论 appsettings.json 怎么设置, 有些浏览器(例如edge)trace debug 都不会写入日志
+        // 目前发现 ff 会写
+        lg.LogTrace(_createLog(LogLevel.Trace));  // 0
+        lg.LogDebug(_createLog(LogLevel.Debug));   // 1
+        lg.LogInformation(_createLog(LogLevel.Information));   // 2
+        lg.LogWarning(_createLog(LogLevel.Warning)); // 3
+        lg.LogError(_createLog(LogLevel.Error)); // 4
+        lg.LogCritical(_createLog(LogLevel.Critical)); // 5
+    }
+    private string _createLog(LogLevel level)
+    {
+        //  return $"log {level}:{++_index}";
+        return $"log {level}.....";
+    }
+}

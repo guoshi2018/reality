@@ -1,0 +1,11 @@
+﻿@preservewhitespace true
+<h3>MultipleSpace</h3>
+<span class=" border-bottom border-primary">     orig      sentence.   </span>
+<span class="border-bottom border-warning">@_str1</span>
+<span class="border-bottom border-info">@StrParam</span>
+@code {
+    private string _str1 = "      abcde   sdeiwii       .   ";
+
+    [Parameter]
+    public string? StrParam { get; set; }
+}

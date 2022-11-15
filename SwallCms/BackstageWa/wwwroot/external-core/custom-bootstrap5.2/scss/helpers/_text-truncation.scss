@@ -1,0 +1,40 @@
+//
+// Text truncation
+//
+@use "sundry" as *;
+@use "mixins/text-truncate" as *;
+
+.text-truncate {
+  @include text-truncate();
+}
+
+//默认3行
+// .mult-line-truncate {
+//   @include mult-line-text-truncate();
+// }
+
+// @each $n in $max-truncate-lines {
+//   .mult-line-truncate-#{$n} {
+//     @include mult-line-text-truncate($n);
+//   }
+// }
+
+// 上面的写法有冗余, 现重写如下
+// 写不一样的属性先
+$xxx: ".text-truncate,";
+#{$xxx} {
+  // 末尾不带数字的, 默认3行
+  @include mult-line-text-truncate-max-lines;
+}
+@each $n in $max-truncate-lines {
+  $xxx: $xxx + ".mult-line-truncate-#{$n},";
+  .mult-line-truncate-#{$n} {
+    @include mult-line-text-truncate-max-lines($n);
+  }
+}
+// 去掉末尾 逗号, 其实不去掉, 编译时也能智能去除
+//$xxx: string.slice($xxx, 1, string.length($xxx)-1);
+// 相同属性
+#{$xxx} {
+  @include mult-line-text-truncate-common;
+}

@@ -1,0 +1,29 @@
+﻿@*
+    默认 App , 不被自定义错误组件包裹, 也不采用包含错误边界的布局
+*@
+<Router AppAssembly="@typeof(DefaultApp).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(DefaultMainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(DefaultMainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+    @*<Navigating>
+    很不幸, 这样会导致导航菜单点击即隐藏
+    <p>Loading the requested page&hellip;</p>
+    </Navigating>*@
+</Router>
+
+
+@code {
+    //protected override void OnInitialized()
+    //{
+    // //   this.OnNavi
+    //    base.OnInitialized();
+    //}
+
+}

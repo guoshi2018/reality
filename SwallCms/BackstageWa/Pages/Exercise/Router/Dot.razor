@@ -1,0 +1,22 @@
+﻿@page "/exercise/router/dot/{param?}"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-basket",
+     IconAtRear = true,
+     LinkTo = "/exercise/router/dot/not.a.static.filename",
+     Text = "path with dot",
+     Tooltip = ""
+)]
+
+<h3>
+    若要使用具有包含点的一个或多个参数的路由，则应用必须使用自定义模板配置该路由。
+    否则路由器解释为名为 {param} 的文件的请求
+</h3>
+<p>
+    Param:@Param
+</p>
+
+@code {
+    [Parameter]
+    public string? Param { get; set; }
+}

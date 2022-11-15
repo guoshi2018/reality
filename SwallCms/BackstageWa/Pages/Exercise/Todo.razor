@@ -1,0 +1,47 @@
+﻿@page "/exercise/todo"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-bell",
+     IconAtRear = false,
+     //    LinkTo = "/exercise/todo",
+     Text = "to do",
+     Tooltip = "Razor page - todo"
+)]
+<PageTitle>Todo demostration</PageTitle>
+<h1>Todo</h1>
+
+
+<input @bind="new_title" placeholder="Something to do" />
+<button @onclick="AddItem">Add todo</button>
+<ul>
+    @foreach (var item in _todos)
+    {
+        @*<li>@item.Title</li>*@
+        <li>
+            <form class="form-check form-check-inline form-switch mt-3">
+                @{
+                    string id = Guid.NewGuid().ToString();
+                }
+                <input type="checkbox" class="form-check-input" checked="@item.Completed" id="@id" />
+                <label class="form-check-label" for="@id">@item.Title</label>
+            </form>
+        </li>
+    }
+</ul>
+
+@code {
+    private List<TodoItem> _todos = new();
+    private string new_title = string.Empty;
+    private void AddItem()
+    {
+        if (!String.IsNullOrWhiteSpace(new_title))
+        {
+            _todos.Add(new TodoItem
+                {
+                    Title = new_title,
+                    Completed = false,
+                });
+            new_title = String.Empty;
+        }
+    }
+}

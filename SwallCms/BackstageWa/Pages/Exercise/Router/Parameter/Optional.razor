@@ -1,0 +1,33 @@
+﻿@* 路由参数测试, 可选参数 *@
+@page "/exercise/router/parameter/optional/{text?}"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-ban",
+     IconAtRear = false,
+     LinkTo = "/exercise/router/parameter/optional",
+     Text = "optinal parameter",
+     Tooltip = ""
+)]
+
+<h1>Blazor is @Text ! This is a optional parameter, using OnParametersSet() or OnInitialized()</h1>
+
+@code {
+    [Parameter]
+    public string? Text { get; set; }
+
+    private int calls = 0;
+
+    // 在同一个 Optional.razor 组件的不同参数 text 之间切换, OnInitialized() 只有首次引发. 说明这是 singleton
+    protected override void OnInitialized()
+    {
+        calls++;
+        Text = Text ?? "fantastic";
+        Console.WriteLine($"OnInitialized called...{calls}");
+    }
+    protected override void OnParametersSet()
+    {
+        calls++;
+        Text = Text ?? "fantastic";
+        Console.WriteLine($"OnParametersSet called......{calls}");
+    }
+}

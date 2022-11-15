@@ -1,0 +1,37 @@
+﻿@*
+    采用 MainLayoutWithErrorBoundary.razor , 在发生异常时, 由该布局的错误边界捕获
+    例如:
+        Pages/exercise/error/raise 的 手工 throw 异常
+        Pages/exercise/fetchdata 的 api 调用异常
+    这种形式的捕获, 需要注意将错误状态复位, 以不影响其他页面的正常
+*@
+
+<Router AppAssembly="@typeof(DefaultApp).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayoutWithErrorBoundary)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayoutWithErrorBoundary)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+    @*<Navigating>
+    很不幸, 这样会导致导航菜单点击即隐藏
+    <p>Loading the requested page&hellip;</p>
+    </Navigating>*@
+</Router>
+
+
+
+
+@code {
+    //protected override void OnInitialized()
+    //{
+    // //   this.OnNavi
+    //    base.OnInitialized();
+    //}
+
+
+}

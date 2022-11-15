@@ -1,0 +1,50 @@
+﻿@page "/exercise/environment/reader"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-map",
+     IconAtRear = false,
+     //    LinkTo = "/exercise/counter",
+     Text = "read evironment"
+//     Tooltip = ""
+)]
+@inject IWebAssemblyHostEnvironment HostEnv
+
+<details open>
+    <summary>
+        Environment example
+    </summary>
+    @{
+        // 两种初始值设定方式, 但是发现无法混合使用
+        //    Dictionary<string, string> envInfos = new Dictionary<string, string>{
+        //{"BaseAddress",HostEnv.BaseAddress },
+        //{"Environment",@HostEnv.Environment},
+        ////["Environment"] = HostEnv.Environment,
+        //{"IsDevelopment",HostEnv.IsDevelopment().ToString()},
+        //{"IsProduction",HostEnv.IsProduction().ToString()},
+        //{"IsStaging",HostEnv.IsStaging().ToString()},
+        //{"IsEnvironment(\"custom\")",HostEnv.IsEnvironment("custom").ToString()}
+        //};
+        Dictionary<string, string> envInfos = new Dictionary<string, string>
+            {
+
+                ["BaseAddress"] = HostEnv.BaseAddress,
+                ["Environment"] = HostEnv.Environment,
+                ["IsDevelopment"] = HostEnv.IsDevelopment().ToString(),
+                ["IsProduction"] = HostEnv.IsProduction().ToString(),
+                ["IsStaging"] = HostEnv.IsStaging().ToString(),
+                ["IsEnvironment(\"custom\")"] = HostEnv.IsEnvironment("custom").ToString(),
+            };
+    }
+    <form class="container">
+        @foreach (KeyValuePair<string, string> item in envInfos)
+        {
+            <div class="row input-group mb-3">
+                <label class="col-7 text-end">@item.Key</label>
+                <input type="text" class="form-control" readonly value="@item.Value" />
+            </div>
+        }
+    </form>
+
+
+</details>
+<h1></h1>

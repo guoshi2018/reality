@@ -1,0 +1,46 @@
+﻿@*
+    使用错误边界(ErrorBoundary)组件统一捕获异常的布局
+*@
+
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+        <ErrorBoundary @ref="eb">
+            <ChildContent>
+                @Body
+            </ChildContent>
+            <ErrorContent>
+                <p class="blazor-error-boundary">
+                    服务器异常, 且未经处理, 所以跑到布局文件 defaultmainlayout.razor 来了
+                </p>
+                <button class="btn btn-danger" @onclick="_ResetError">忽略错误</button>
+            </ErrorContent>
+        </ErrorBoundary>
+    </main>
+</div>
+
+@code {
+    private ErrorBoundary? eb;
+
+    protected override void OnParametersSet()
+    {
+        // 在后续页面导航事件中将其重置为非错误状态
+        eb?.Recover();
+    }
+
+    // 或者通过按钮, 可选忽略
+    private void _ResetError()
+    {
+        eb?.Recover();
+    }
+
+
+}

@@ -1,0 +1,31 @@
+﻿@page "/exercise/di/timetravel-demo"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-cog",
+     IconAtRear = false,
+     //   LinkTo = "/exercise/di/timetravel-demo",
+     Text = "let us test di",
+     Tooltip = ""
+)]
+@inherits OwningComponentBase
+@inject ITimeTravel Tt
+
+<h1><code>OwningComponentBase</code> Example</h1>
+<h3>
+    导航到另一个组件并返回, Tt2 变化, Tt 不变
+</h3>
+<ul>
+    <li>Tt.DT, use dependence inject: @Tt.DT</li>
+    <li>Tt2.DT, use GetRequiredService mthod: @Tt2?.DT</li>
+    <li>Tt == Tt2:@(Tt == Tt2)</li>
+</ul>
+
+@code {
+    private ITimeTravel? Tt2 { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // ScopedServices 是  OwningComponentBase 的保护属性
+        Tt2 = ScopedServices.GetRequiredService<ITimeTravel>();
+    }
+}

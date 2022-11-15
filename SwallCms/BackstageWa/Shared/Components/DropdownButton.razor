@@ -1,0 +1,25 @@
+﻿
+
+<div class="dropdown">
+    <button type="button"
+            class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+        @Text
+    </button>
+    @if (null != Handlers)
+    {
+        <ul class="dropdown-menu">
+            @foreach (var item in Handlers)
+            {
+                <li><a role="button" class="dropdown-item" @onclick:preventDefault @onclick="item.Value">@item.Key</a></li>
+                <li><hr class="dropdown-divider" /></li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? Text { get; set; }
+    [Parameter]
+    public IDictionary<string, Action<MouseEventArgs>>? Handlers { get; init; }
+}

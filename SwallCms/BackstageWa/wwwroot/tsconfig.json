@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "removeComments": true,
+    "outDir": "script/js",
+    "allowJs": true,
+    "target": "es2020",
+    //  "module": "esnext",
+    "strict": true,
+    "importHelpers": true,
+    //"moduleResolution": "node",
+    //"inlineSourceMap": true,
+    "sourceMap": true,
+    "skipLibCheck": true
+    //"resolveJsonModule": true
+  },
+  "include": [
+    "script/ts/**/*.ts"
+  ]
+}

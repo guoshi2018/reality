@@ -1,0 +1,165 @@
+﻿@page "/exercise/uri-and-nav-state-helper/navigate"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-browser",
+     IconAtRear = false,
+     LinkTo = "/exercise/uri-and-nav-state-helper/navigate?myname=guoshi&age=52&birth=1971-9-11&ping=one&ping=three&ping=nineteen",
+     Text = "let us see navigate",
+     Tooltip = ""
+)]
+
+@implements IDisposable
+@inject ILogger<Navigate> Logger
+@inject NavigationManager NavMgr
+
+<h1>Navigate in component code example</h1>
+<form class="container">
+    <div class="row input-group mb-3">
+        <label class="col-3 text-end">base uri:</label>
+        <input type="text" class="form-control" readonly value="@NavMgr.BaseUri" />
+    </div>
+    <div class="row input-group mb-3">
+        <label class="col-3 text-end"> uri:</label>
+        <input type="text" class="form-control" readonly value="@NavMgr.Uri" />
+    </div>
+    <div class="row mb-3 input-group">
+        <div class="col-3 overflow-visible">
+            <div class="dropdown">
+                <button type="button" class="btn btn-success dropdown-toggle my-n2"
+                        data-bs-toggle="dropdown">
+                    method test
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick:preventDefault @onclick="TransferToAbs">
+                            ToAbsolute
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick:preventDefault
+                           @onclick="TransferToRel">ToBaseRelativePath</a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                        <a class="dropdown-item" href="#" @onclick:preventDefault
+                           @onclick="CreateUriWithSomeNewParameters">GetUriWithQueryParameters</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <input type="text" class="form-control" @bind-value="result" placeholder="输入源uri, 单击左侧菜单, 在这里查看结果" />
+    </div>
+    <div class="row input-group mb-3">
+        <label class="col-3 text-end">myname:</label>
+        <input type="text" class="form-control" readonly value="@myname" />
+    </div>
+    <div class="row input-group mb-3">
+        <label class="col-3 text-end">age:</label>
+        <input type="text" class="form-control" readonly value="@theAge" />
+    </div>
+    <div class="row input-group mb-3">
+        <label class="col-3 text-end">birth:</label>
+        <input type="text" class="form-control" readonly value="@birthday" />
+    </div>
+    <div class="row input-group mb-3">
+        <label class="col-3 text-end">ping:</label>
+        <input type="text" class="form-control" readonly value="@GetDesc(ping)" />
+    </div>
+</form>
+
+
+<button type="button" class="btn btn-primary" @onclick="NavToCounter">
+    Navigate to the Counter component
+</button>
+
+
+@code {
+    private string result = "";
+    private void TransferToAbs()
+    {
+        result += "--->" + NavMgr.ToAbsoluteUri(result).ToString();
+    }
+    private void TransferToRel()
+    {
+        result += "--->" + NavMgr.ToBaseRelativePath(result).ToString();
+    }
+    private void CreateUriWithSomeNewParameters()
+    {
+        result += "--->" + NavMgr.GetUriWithQueryParameters(
+            new Dictionary<string, object?>
+                {
+                    ["your-name"] = "Thricky",
+                    ["myname"] = null,
+                    ["age"] = 63,
+                    ["eye color"] = "black",
+                    ["ping"] = null,
+                    ["pong"] = new int?[] { 35, 16, -19 }
+                }
+        );
+    }
+
+    private void NavToCounter()
+    {
+        NavMgr.NavigateTo("/exercise/counter", new NavigationOptions()
+            {
+                ForceLoad = true,
+                ReplaceHistoryEntry = true,
+            });
+    }
+
+    protected override void OnInitialized()
+    {
+        NavMgr.LocationChanged += LocationChangedHandler;
+    }
+    private void LocationChangedHandler(Object? sender, LocationChangedEventArgs e)
+    {
+        Logger.LogInformation($"URL of new locaiton:{e.Location}");
+    }
+    public void Dispose()
+    {
+        Logger.LogInformation("navigate.razor page disposed");
+        NavMgr.LocationChanged -= LocationChangedHandler;
+    }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? myname { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "age")]
+    public int theAge { get; set; }
+
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "birth")]
+    public DateTime birthday { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    //[SupplyParameterFromQuery(Name = "pong")]
+    public string[]? ping { get; set; }
+
+    private string GetDesc<T>(IEnumerable<T>? items)
+    {
+        StringBuilder result = new StringBuilder("[");
+        if (null != items)
+        {
+            foreach (T item in items)
+            {
+                result.Append($"{item}, ");
+            }
+        }
+        if (result.Length > 1)
+        {
+            result.Replace(", ", "]", result.Length - 2, 2);
+        }
+        else
+        {
+            result.Append("]");
+        }
+
+        return result.ToString();
+    }
+}
+

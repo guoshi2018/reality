@@ -1,0 +1,16 @@
+﻿@page "/exercise/catch-all/{*pageRoute}"
+@* 上面路径中, 参数前面的星号, 表示可以 catch 一切, 包括斜杆(统一变为反斜杠). 参数列表除外 *@
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-bug",
+     //  IconAtRear = true,
+     LinkTo = @"/exercise/catch-all/this/啊 非/one by one/ hello world!=hihi\123\he/this end!?name=guoshi&&age=99",
+     Text = "catch all rest",
+     Tooltip = ""
+)]
+<h3>catch_all</h3>
+<p>parameter PageRoute: @pagerOute</p>
+@code {
+    [Parameter]
+    public string? pagerOute { get; set; }
+}

@@ -1,0 +1,85 @@
+// Shorthand
+/*
+  原版存在的问题:
+  1. 由于top/bottom没有保证另一个为auto, 故不满足不同屏宽下, 切换sticky到top和bottom的要求,
+    即不能自适应屏宽. 已更正
+  2. fixed-top/fixed-bottom, 不具备屏宽自适应. 已更正.
+*/
+
+@use "variables" as *;
+@use "mixins/breakpoints" as *;
+
+
+// original
+// .fixed-top {
+//   position: fixed;
+//   top: 0;
+//   right: 0;
+//   left: 0;
+//   z-index: $zindex-fixed;
+// }
+
+// .fixed-bottom {
+//   position: fixed;
+//   right: 0;
+//   bottom: 0;
+//   left: 0;
+//   z-index: $zindex-fixed;
+// }
+
+// // Responsive sticky top and bottom
+// @each $breakpoint in map-keys($grid-breakpoints) {
+//   @include media-breakpoint-up($breakpoint) {
+//     $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+//     .sticky#{$infix}-top {
+//       position: sticky;
+//       top: 0;
+//       z-index: $zindex-sticky;
+//     }
+
+//     .sticky#{$infix}-bottom {
+//       position: sticky;
+//       bottom: 0;
+//       z-index: $zindex-sticky;
+//     }
+//   }
+// }
+
+
+// 更正如下:
+
+// Responsive sticky top and bottom, now add fixed top and bottom
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    .sticky#{$infix}-top {
+      position: sticky;
+      top: 0;
+      bottom: auto;
+      z-index: $zindex-sticky;
+    }
+
+    .sticky#{$infix}-bottom {
+      position: sticky;
+      top: auto;
+      bottom: 0;
+      z-index: $zindex-sticky;
+    }
+
+    .fixed#{$infix}-top {
+      position: fixed;
+      top: 0;
+      bottom: auto;
+      z-index: $zindex-fixed;
+    }
+
+    .fixed#{$infix}-bottom {
+      position: fixed;
+      top: auto;
+      bottom: 0;
+      z-index: $zindex-fixed;
+    }
+  }
+}

@@ -1,0 +1,170 @@
+@use "sass:string";
+// 新增文件
+
+//将_variable.scss中原有的一些变量迁移到此, 以避免一些模块之间的循环引用
+
+// Prefix for :root CSS variables
+
+$variable-prefix: bs- !default; // Deprecated in v5.2.0 for the shorter `$prefix`
+$prefix: $variable-prefix !default;
+
+$white: #fff !default;
+$black: #000 !default;
+
+// The contrast ratio to reach against white, to determine if color changes from "light" to "dark". Acceptable values for WCAG 2.0 are 3, 4.5 and 7.
+// See https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast
+// mt-s
+$min-contrast-ratio: 4.5 !default;
+
+// Customize the light and dark text colors for use in our color contrast function.
+$color-contrast-dark: $black !default;
+$color-contrast-light: $white !default;
+
+// Characters which are escaped by the escape-svg function
+$escaped-characters: (("<", "%3c"), (">", "%3e"), ("#", "%23"), ("(", "%28"), (")", "%29")) !default;
+
+// Options
+//
+// Quickly modify global styling by enabling or disabling optional features.
+// from original _variables.scss
+$enable-caret: true !default;
+$enable-rounded: true !default;
+$enable-shadows: false !default;
+$enable-gradients: false !default;
+$enable-transitions: true !default;
+$enable-reduced-motion: true !default;
+$enable-smooth-scroll: true !default;
+$enable-grid-classes: true !default;
+$enable-container-classes: true !default;
+$enable-cssgrid: false !default;
+$enable-button-pointers: true !default;
+$enable-rfs: true !default;
+$enable-validation-icons: true !default;
+$enable-negative-margins: false !default;
+$enable-deprecation-messages: true !default;
+$enable-important-utilities: true !default;
+
+//自定义: 添加多行截断, 仅适用于-webkit内核浏览器
+// 参考 https: //blog.csdn.net/qq_33235680/article/details/123383817
+$max-truncate-lines: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10) !default;
+
+// for flex layout
+$include-column-box-sizing: false !default;
+
+// 在_variables.scss中定义的一些如下格式的变量定义:
+// 		$kbd-color: var(--#{$prefix}body-bg) !default;,
+// 在_root.scss(_accordion.scss)中有如下对应的css变量定义:
+//  	--#{$prefix}body-bg: #{$body-bg};
+// 其中 $body-bg 也是在 -variables.scss中定义.
+// 那么, 为什么不一次做如下定义, 干脆利落呢:
+// 		$kbd-color:$body-bg !default;
+// 原因在于后者失去了在末端css文件中重定义的机会.
+// 要重定义, 按照第二种方案, 只能是:
+// 		@use "variables" with ($body-bg: ...) 或者
+// 		@use "variables" with ($kbd-color: ...).
+// 而原版的第一种"绕一圈"的方案, 重定义的方式, 除了上面两行外,还可以:
+// 		html: style="--bs-body-bg: ...;" 或者
+//   	css:	 --bs-body-bg: ...;
+// 本开关即为启用"绕一圈"的方案, 也就是原版, 使重定义方式多样化.
+// 但是, 如果你不打算采用任何手工css文件, 后台style全部采用scss
+// 及时生成, 也可以考虑关闭它, 以提高效率(一点点而已, 几乎可以忽略不计)
+// 注意: 控制的变量, 在_variables.scss中一共25个, 其中牵扯到的文件:
+// _accordion.scss 中一个:
+// 			$accordion-color: var(--#{$prefix}body-color) !default;
+// _root.scss 中包含其余的24个.
+$assign-via-css-var: true !default;
+
+// scss-docs-start spacer-variables-maps
+$spacer: 1rem !default;
+$spacers: (
+	0: 0,
+	1: $spacer * 0.25,
+	2: $spacer * 0.5,
+	3: $spacer,
+	4: $spacer * 1.5,
+	5: $spacer * 3,
+) !default;
+// scss-docs-end spacer-variables-maps
+$gutters: $spacers !default;
+
+// 启用自定义xgrid
+$enable-xgrid: false !default;
+
+// 用于 css grid 网格系统的对齐:
+// align-items / justify-items 及其简写 place-items
+// align-self / justify-self 及其简写 place-self
+$place-items-fmt: (
+	auto: auto,
+	normal: normal,
+	start: start,
+	end: end,
+	center: center,
+	stretch: stretch,
+	baseline: baseline,
+	first-baseline: string.unquote("first baseline"),
+	last-baseline: string.unquote("last baseline"),
+) !default;
+
+// align-content / justify-content 及其简写 place-content
+$place-content-fmt: (
+	normal: normal,
+	start: start,
+	end: end,
+	center: center,
+	stretch: stretch,
+	space-around: space-around,
+	space-between: space-between,
+	space-evenly: space-evenly,
+	baseline: baseline,
+	first-baseline: string.unquote("first baseline"),
+	last-baseline: string.unquote("last baseline"),
+) !default;
+
+$size-percents: (
+	// +
+	0: 0%,
+	5: 5%,
+	// +
+	10: 10%,
+	// +
+	15: 15%,
+	// +
+	20: 20%,
+	// +
+	25: 25%,
+	30: 30%,
+	// +
+	35: 35%,
+	// +
+	40: 40%,
+	// +
+	45: 45%,
+	// +
+	50: 50%,
+	55: 55%,
+	// +
+	60: 60%,
+	// +
+	65: 65%,
+	// +
+	70: 70%,
+	// +
+	75: 75%,
+	80: 80%,
+	// +
+	85: 85%,
+	// +
+	90: 90%,
+	// +
+	95: 95%,
+	// +
+	100: 100%,
+	auto: auto
+) !default;
+
+// banner 使用的信息
+$custom-file: "guoshi-bootstrap.scss" !default;
+$custom-year-range: "2022-2030" !default;
+$custom-author: "guoshi.bclz_gxy" !default;
+$custom-addr: "http://www.guoshi.com" !default;
+$custom-contact: "wx:scbycwlfdrm_guoshi,qq:623631161" !default;

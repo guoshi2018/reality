@@ -1,0 +1,23 @@
+﻿[
+  {
+    "inputFile": "Shared/MainLayout.razor.scss",
+    "outputFile": "Shared/MainLayout.razor.css",
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "inputFile": "Shared/NavMenu.razor.scss",
+    "outputFile": "Shared/NavMenu.razor.css",
+    "minify": {
+      "enabled": false
+    }
+  },
+  {
+    "inputFile": "wwwroot/style/scss/index.scss",
+    "outputFile": "wwwroot/style/css/index.css",
+    "minify": {
+      "enabled": false
+    }
+  }
+]

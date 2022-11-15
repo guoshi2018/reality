@@ -1,0 +1,32 @@
+﻿@*
+    两种异常(错误)捕获功能兼而有之, 发生异常的页面, 有两种选择:
+    1. 可以显示指定层叠的自定义组件 Error 模式处理异常,
+    2. 不指定, 则由使用错误边界的布局接收
+*@
+<Error>
+    <Router AppAssembly="@typeof(DefaultApp).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayoutWithErrorBoundary)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayoutWithErrorBoundary)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+        @*<Navigating>
+        很不幸, 这样会导致导航菜单点击即隐藏
+        <p>Loading the requested page&hellip;</p>
+        </Navigating>*@
+    </Router>
+</Error>
+
+@code {
+    //protected override void OnInitialized()
+    //{
+    // //   this.OnNavi
+    //    base.OnInitialized();
+    //}
+
+}

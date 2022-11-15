@@ -1,0 +1,11 @@
+{
+  "guoshi": {
+    "amount": 18,
+    "type": "audi v8",
+    "date": {
+      "one": "one-1981-12-23",
+      "two": "two-2021-5-18"
+    }
+  },
+  "address": "yindu e2 502, this will override the same property within appsetting.json"
+}

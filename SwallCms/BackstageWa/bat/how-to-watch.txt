@@ -1,0 +1,23 @@
+﻿
+[监视 ts scss文件]
+
+第一种方法:
+终端打开 wwwroot, (为避免添乱, 也可以直接打开外围的 powershell/cmd):
+
+	1) 监视 wwwroot/script/ts/**/*.ts, 生成到 wwwroot/script/js/**/*.js:
+	tsc -W
+
+	2) 监视单文件: wwwroot/style/scss/index.scss, 生成 wwwroot/style/css/index.css :
+	sass --watch --no-source-map --load-path=external-core/custom-bootstrap5.2/scss   style/scss/index.scss:style/css/index.css
+
+---------------------------------------------
+第二种方法:
+资源浏览器打开 /bat 目录, 单击运行 watch-scss.bat watch-ts.bat 批处理文件
+
+
+--------------------------------------
+注意: 使用 compilerconfig.json, 虽然可以实现以上目的, 且不用手工运行 .bat, 但是:
+1) 目前没有找到一次指定多个文件的方法, 即 sass 命令的 多->多 编译模式
+2) 目前没有找到指定对应于 sass 命令的 load-path 的选项, 使得 @use @forward 很不方便. 估计得等新版本出现
+
+所以, 还是使用 .bat 文件更自然些.

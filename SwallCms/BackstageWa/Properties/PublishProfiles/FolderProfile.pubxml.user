@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>E:\so-do\Workspace\D\Reality\SwallCms\BackstageWa\bin\Release\net6.0\browser-wasm\publish\</_PublishTargetUrl>
+    <History>True|2022-10-30T02:36:39.2374779Z;True|2022-10-30T10:34:44.6831640+08:00;True|2022-10-21T09:50:17.8798583+08:00;True|2022-10-21T09:44:11.5308664+08:00;True|2022-10-21T09:34:54.2425336+08:00;True|2022-10-21T09:34:35.3447616+08:00;True|2022-10-21T09:31:29.3140628+08:00;True|2022-10-21T09:29:34.7918308+08:00;True|2022-10-20T17:13:48.5316469+08:00;True|2022-10-20T16:32:31.8769841+08:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

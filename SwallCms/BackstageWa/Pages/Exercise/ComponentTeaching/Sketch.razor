@@ -1,0 +1,355 @@
+﻿@page "/exercise/component-teaching/sketch"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-phone",
+     Tooltip = "组件教程之概念演练",
+     Text = "官方文档:组件之概述"
+)]
+@preservewhitespace true
+
+<h3>Component Concept</h3>
+<details>
+    <summary>
+        不要在 get 或 set 访问器中放置自定义逻辑
+    </summary>
+    <div class="input-group">
+        <input type="text" @bind-value="_myname" @bind-value:event="oninput" class="form-control"
+               placeholder="输入名称, 查看组件Name属性是否同步变化" />
+    </div>
+    <AutoProp Name="@_myname" Title="how are you"></AutoProp>
+</details>
+
+<details>
+    <summary>
+        使用 tuple 传递多个值, 值类型的 tuple 或是 引用类型的 tuple,  在 user 端和组件端应该一致
+    </summary>
+    <TupleTransferValues Data="@hey"></TupleTransferValues>
+</details>
+
+<details>
+    <summary>
+        演示重写组件参数带来的副作用
+    </summary>
+    <div>
+        <article>
+            <h5>
+                如果设置了子内容, 则调用StateHasChanged时会重新呈现, 导致重置Expanded初始值;
+                反之,未设置子内容, 不会重新呈现, Expanded值也就不会被重置
+            </h5>
+            <OverrideParam Expanded="true">
+                with some content
+            </OverrideParam>
+            <OverrideParam Expanded="true" />
+        </article>
+        <article>
+            <h5>
+                修订后的组件, 使用私有字段来维护其内部切换状态, 则可有效避免上述副作用
+            </h5>
+            <NoOverrideParam Expanded="false">
+                with some content
+            </NoOverrideParam>
+            <NoOverrideParam Expanded="true" />
+        </article>
+        <button @onclick="_refresh">
+            Call StateHasChanged
+        </button>
+    </div>
+</details>
+<details>
+    <summary>
+        属性展开和任意参数, 请查看生成的 html
+    </summary>
+    <article>
+        <div>
+            <h5>常规用法, 将属性一个个写入</h5>
+            <input maxlength="@maxlength"
+                   placeholder="@placeholder"
+                   required="@required"
+                   size="@size" />
+        </div>
+        <div>
+            <h5>
+                使用属性展开, 默认展开的属性名称是 @@attributes
+            </h5>
+            <input @attributes="InputAttributes" />
+        </div>
+        <div>
+            <h5>
+                必须使用 @@attributes, 其他无效
+            </h5>
+            <input @customAttrs="InputAttributes" />
+        </div>
+        <div>
+            <h5>
+                利用 唯一一个配置有 (CaptureUnmatchedValues = true) 的 属性(kkk), 携带任意特性.
+                但是, 这些特性值, 是否生效, 取决于组件内部这些特性是否有定义(值), 以及他们与
+                kkk 的相对位置(前后关系)
+            </h5>
+            <RangeWrap value="here is right" hole="892" ok="one two" WrapperAttrs="_divAttrs"
+                       CustomAttrs="_rangeAttrs" NoUseLabelAttrs="_labelAttrs" />
+        </div>
+    </article>
+</details>
+<details>
+    <summary>
+        有 / 无 @@key 的列表更新, 焦点变换 比较
+    </summary>
+    <CommonInputList UseKey="false"></CommonInputList>
+    <CommonInputList UseKey="true"></CommonInputList>
+</details>
+<details>
+    <summary>
+        使用 MarkupString, 包装原始HTML内容, 但是内嵌的 script 不会执行
+    </summary>
+    <div>
+        <h5>不包装, 显示成原始html标记原本</h5>
+        <ul>
+            <li>
+                @_origHtml1
+            </li>
+            <li>
+                @_origHtml2
+            </li>
+            <li>
+                @_origHtml3
+            </li>
+        </ul>
+    </div>
+    <div>
+        <h5>强制转换为 MarkupString(即将原始html包装起来), 则解释后, 再渲染</h5>
+        <ul>
+            <li>
+                @((MarkupString)_origHtml1)
+            </li>
+            <li>
+                @((MarkupString)_origHtml2)
+            </li>
+            <li>
+                @((MarkupString)_origHtml3)
+            </li>
+        </ul>
+
+    </div>
+    <div>
+        <h5>或者构造一个 MarkupString 对象, 也能达到上述效果</h5>
+        <ul>
+            <li>
+                @(new MarkupString(_origHtml1))
+            </li>
+            <li>
+                @(new MarkupString(_origHtml2))
+            </li>
+            <li>
+                @(new MarkupString(_origHtml3))
+            </li>
+        </ul>
+    </div>
+    <div>
+        <h5>真正的 script 不会执行的原因, 在于 .razor 语法不允许. 如下, 不注释掉就不编译</h5>
+        @* <script>alert("当你看到这个对话框, 说明真正的内嵌script会执行.");</script>*@
+    </div>
+</details>
+<details>
+    <summary>
+        template, 而 @@childContent 约定为子组件的内容组件参数名, 是该项应用的特例. 注意 模板语法中 @@, 以及 __builder 的使用
+    </summary>
+    <ul>
+        <li>
+            @_timeTpl1
+        </li>
+        <li>
+            @_timeTpl2
+        </li>
+        <li>
+            @_petTpl1(new Pet{Name="wikee"})
+        </li>
+        <li>
+            @_petTpl2(new Pet{Name="Niudun"})
+        </li>
+    </ul>
+</details>
+<details>
+    <summary>
+        静态资产根目录约定为 wwwroot, 使用 / 表示, 不支援 ~/ 形式
+    </summary>
+    <ul>
+        <li>
+            <img alt="Company logo" src="/image/png/index/icon-192.png" />
+        </li>
+    </ul>
+</details>
+<details>
+    <summary>
+        foreignObject 元素
+    </summary>
+    <div>
+        <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" rx="10" ry="10" width="200" height="200" stroke="black"
+                  fill="none" />
+            <foreignObject x="20" y="20" width="160" height="160">
+                <p>@_fo_msg</p>
+            </foreignObject>
+        </svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg">
+            <foreignObject width="200" height="200">
+                <label>
+                    Two-way binding:
+                    <input @bind="_value" @bind:event="oninput" />
+                    <span>@_value</span>
+                </label>
+            </foreignObject>
+        </svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg">
+            <foreignObject width="300" height="200">
+                <SurveyPrompt Title="没有 foreignObject 包围, 该标签将被忽略" />
+            </foreignObject>
+        </svg>
+    </div>
+</details>
+<details>
+    <summary>
+        添加指令 @@preservewhiltespace true, 以保持多余空白. 不知何故, 不起作用, 不论是 razor  page 还是 razor 组件
+        .为今之计, 仍然是给元素或它的父级添加 white-space:pre . 即自定义的 bootstrap5.20的 class="ws-pre"
+    </summary>
+    <span class="border-bottom border-primary">     前面     中间   后面    都  有    几个  空白字符      </span>
+    <span class="border-bottom border-warning">@_strWithSpaces</span>
+    <MultipleSpace StrParam="          you   w   in     , comm.    !!   "></MultipleSpace>
+</details>
+<details>
+    <summary>
+        带类型参数的组件, MSDN上示范的要求填写的类型参数, 其实可以省略.
+    </summary>
+    <div>
+        <TypedParamComponent DataList="@(new List<string>{"one","three","four","two"})"></TypedParamComponent>
+        <TypedParamComponent DataList="@(new int[]{5,4,3,2,1,-100})" TItem="int"></TypedParamComponent>
+    </div>
+</details>
+<details>
+    <summary>
+        类型参数的级联, 但是觉察不出 级联的效果或讲究或约束
+    </summary>
+    <div>
+        <ListGeneric1 TExample="string">
+            <ListDisplay1 ExampleList="_data_int1" />
+            <ListDisplay2 ExampleList="_data_str2" />
+        </ListGeneric1>
+        <ListGeneric1 TExample="int">
+            <ListDisplay1 ExampleList="_data_str1" />
+            <ListDisplay2 ExampleList="_data_int2" />
+        </ListGeneric1>
+    </div>
+</details>
+<details>
+    <summary>
+        类型参数连带数据参数的级联测试
+    </summary>
+    <div>
+        <CascadingValue Value="_data_str1">
+            <ListGeneric2 TExample="string">
+                <ListDisplay3></ListDisplay3>
+                <ListDisplay4></ListDisplay4>
+            </ListGeneric2>
+        </CascadingValue>
+        <CascadingValue Value="_data_int2">
+            <ListGeneric2 TExample="int">
+                <ListDisplay3></ListDisplay3>
+                <ListDisplay4 />
+            </ListGeneric2>
+        </CascadingValue>
+    </div>
+</details>
+@code {
+    // for AutoProp
+    private string _myname = string.Empty;
+
+    // for TupleTransferValues
+    //private Tuple<int, string, Boolean> hey = new Tuple<int, string, Boolean>(19, "hello everyone", true);
+    private Tuple<int, string, Boolean> hey = Tuple.Create(22, "sility is there", false);
+    //private (int, string, Boolean) hey = (19, "hello everyone", true);
+
+    //for OverrideParam and NoOverrideParam
+    private void _refresh()
+    {
+        StateHasChanged();
+    }
+
+    #region 属性展开和任意参数
+    private string maxlength = "10";
+    private string placeholder = "Input placeholder text";
+    private string required = "required";
+    private string size = "20";
+
+    private Dictionary<string, object> InputAttributes = new()
+        {
+            { "placeholder", "Input placeholder text by dictionary" },
+            { "required", true },
+            {"customAttr",1003}, // 也支援自定义 attr
+            { "size", "30" },
+            { "maxlength", "20" }
+        };
+
+    private Dictionary<string, object> _divAttrs = new()
+        {
+            ["here"] = "yes",
+            ["there"] = "no",
+            ["ok"] = false,
+        };
+    private Dictionary<string, object> _rangeAttrs = new()
+        {
+            ["max"] = 80,
+            ["min"] = 30,
+            ["another"] = 99, // 自定义字段
+            ["step"] = 3,
+        };
+
+    private Dictionary<string, object> _labelAttrs = new()
+        {
+            ["one"] = 23,
+            ["two"] = "how are you",
+            ["disabled"] = true,
+            ["three"] = DateTime.Now.ToLocalTime(),
+            ["style"] = "color:blue;font-size:3em;",
+        };
+    #endregion
+
+    // MarkupString 的作用示例
+    private string _origHtml1 = "<p class=\"text-danger\">This is dangrous <em>markuop string</em>.</p>";
+    private string _origHtml2 = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"alert('hello,world');\">点击显示对话框</button>";
+    private string _origHtml3 = "<script type=\"text/javascript\"> alert('--------------------you win---------------------'); </script>";
+
+    #region 模板 template 示例
+    private class Pet
+    {
+        public string? Name { get; set; }
+    }
+    private RenderFragment _timeTpl1 = __builder =>
+    {
+        <p>(first fashion) The time is @DateTime.Now. </p>
+    };
+    private RenderFragment<Pet> _petTpl1 = pet => __builder =>
+    {
+        <p>(first fashion)Pet:@pet.Name</p>
+    };
+    private RenderFragment _timeTpl2 =@<p>(second fashion) The time is @DateTime.Now. </p>;
+    private RenderFragment<Pet> _petTpl2 = (pet) =>@<p>(second fashion)Pet:@pet.Name</p>;
+    #endregion
+
+    // foreignObject 的支援
+    private string _fo_msg = "Lorem ipsum dolor sit amet, consectetur adipiscing " +
+        "elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    private string? _value;
+
+    // preservewhitespace 的测试
+    private string _strWithSpaces = "    a b c     de  dsfiiei      goodbye       .    ";
+
+    #region 组件类型参数即级联测试
+    private List<string> _data_str1 = new List<string> { "item 1", "item 2" };
+    private List<int> _data_int1 = new List<int> { 1, 2, 3, 4, 8 };
+    private string[] _data_str2 = new string[] { "one", "two", "four", "three" };
+    private int[] _data_int2 = new int[] { -8, -3, -11, 19, 27 };
+
+    #endregion
+
+}

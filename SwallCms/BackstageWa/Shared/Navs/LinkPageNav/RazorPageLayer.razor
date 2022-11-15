@@ -1,0 +1,89 @@
+﻿@inject IJSRuntime JS
+
+<a class="d-flex p-1 nav-link justify-content-between text-info fst-italic bg-clip-content"
+   data-bs-toggle="collapse" @onclick:stopPropagation @onclick:preventDefault @onclick="LayerClickHandler"
+   data-bs-target="#@_contentId" href="#">
+
+    <span class="me-2 oi oi-flash" aria-hidden="true"></span>
+    <span class="me-auto" data-bs-title="@Nsp" data-bs-toggle="tooltip">
+        @Nsp.Substring(Nsp.LastIndexOf('.')+1)
+    </span>
+    <span class="me-2" data-bs-title="click-to-@(_isContentShow?"collpase":"expand")" data-bs-toggle="tooltip"
+          data-bs-placement="right">
+        <span class="omony-icon oi @(_isContentShow? "oi-arrow-top":"oi-arrow-bottom")" aria-hidden="true"></span>
+    </span>
+</a>
+
+<div class="collapse" id="@_contentId">
+    <nav class="flex-column">
+        @ChildContent
+    </nav>
+</div>
+
+
+@code {
+
+    // 注意 bootstrap 要求 id 不能以数字开始
+    private string _contentId = $"layer{Guid.NewGuid().ToString()}";
+    private RenderFragment _childContent = (RenderTreeBuilder __builder) =>
+        {
+            <h5> 未传入slot </h5>
+        };
+
+    [Parameter]
+    public RenderFragment ChildContent
+    {
+        get => _childContent;
+        set => _childContent = value;
+    }
+
+    [Parameter]
+    public string Nsp { get; set; } = "";
+
+    /// <summary>
+    /// 用作层级的右边箭头的 tooltip
+    /// </summary>
+    //private static string _arrow_title = "click to expand";
+
+    private bool _isContentShow = false;
+
+    private async void _queryContenState()
+    {
+        // 但是此时的内容器正在折叠或正在展开, class = "collapsing", 无法据此判断
+        // 标准做法, 是监听内容区的 hidden.bs.collapse  / shown.bs.collapse 事件.
+        // 这里先采用延时等待一段时间的本办法,
+        // 但还是有问题, 因为_isContentShow并不像 vue 一样, 变化就刷新局部, 只有强制刷新
+        await Task.Delay(500);
+        _isContentShow = await JS.InvokeAsync<Boolean>("isCollapseSectionShow", _contentId);
+        // Console.WriteLine($"[Razor] is shown:{_isContentShow}");
+        StateHasChanged();
+
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        //  _queryContenState();
+    }
+
+    /// <summary>
+    /// 处理当前层级被点击事件, 注意不要冒泡, 以免在窄屏下, 整个菜单被折叠
+    /// </summary>
+    private void LayerClickHandler(MouseEventArgs evt)
+    {
+        Console.WriteLine("在点击事件发生后, 阻止冒泡,而不是在标签内简单使用 @onclick:stopPropagation 阻止");
+
+        // 这样处理有一些问题, 至少是优雅上. 标准做法应该是根据内容区的 class 是否包含 show
+        //isCollapsed = !isCollapsed;
+        _queryContenState();
+
+        // 下面可能是参数的问题, 暂时没效果.先使用@onclick:stopPropagation配合阻止.  以后再说
+        //var render = new RenderFragment(builder =>
+        //{
+        //    builder.OpenElement(0, "a");
+        //    builder.AddEventStopPropagationAttribute(1, "onclick", true);
+        //    builder.CloseElement();
+        //});
+    }
+
+}
+

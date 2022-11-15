@@ -1,0 +1,28 @@
+﻿@page "/exercise/component-teaching/control-head-content"
+@attribute [NavItemFlag(
+     Enabled = true,
+     Icon = "oi-random",
+     Tooltip = "组件内控制 head 的 title 和 meta",
+     Text = "control head content"
+)]
+<details>
+    <summary>
+        使用 Razor 设置页面的标题和说明。注意, 其他可能 不可以, 例如 script
+    </summary>
+    <div>
+        <p>
+            Title:@title
+        </p>
+        <p>Description :@description</p>
+        <PageTitle>@title</PageTitle>
+        <HeadContent>
+            <meta name="description" content="@description" />
+
+        </HeadContent>
+    </div>
+</details>
+
+@code {
+    private string description = "Description set by component";
+    private string title = "Title set by component";
+}

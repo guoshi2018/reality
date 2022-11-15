@@ -1,0 +1,38 @@
+﻿@using System.Timers
+
+
+<h3>@(UseKey ? "有@@key 则保持 " : "无 @@key 导致每次插入新的 input 都会导致焦点移动, 且新输入的值不保持")</h3>
+
+<ul>
+
+    @foreach (string msg in _messages)
+    {
+        <li @key="(UseKey?msg:null)">
+            <input type="text" value="@msg" />
+        </li>
+    }
+</ul>
+@code {
+    private Timer _timer = new Timer(3000);
+    public List<String> _messages = new()
+    {
+        "one","two","three","four",
+    };
+    [Parameter]
+    public Boolean UseKey { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        _timer.Elapsed += _timerHandler;
+        _timer.Start();
+    }
+    private void _timerHandler(Object? sender, ElapsedEventArgs e)
+    {
+        _ = InvokeAsync(() =>
+        {
+            _messages.Insert(0, DateTime.Now.ToString());
+            StateHasChanged();
+        });
+    }
+    public void Dispose() => _timer.Dispose();
+}

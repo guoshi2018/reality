@@ -1,0 +1,36 @@
+﻿@*
+    采用自定义错误组件(Error)包裹, 以便将错误组件层叠传递到需要的组件,
+    当需要的组件接收后, 可以交给 Error 组件集中处理异常.
+    例如 :
+        Pages/exercise/error/raise 的除0异常;
+
+*@
+<Error @ref="_err">
+    <Router AppAssembly="@typeof(DefaultApp).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(DefaultMainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(DefaultMainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+        @*<Navigating>
+        很不幸, 这样会导致导航菜单点击即隐藏
+        <p>Loading the requested page&hellip;</p>
+        </Navigating>*@
+    </Router>
+</Error>
+
+@code {
+    protected override void OnInitialized()
+    {
+        //   this.OnNavi
+        //  base.OnInitialized();
+    }
+
+    private Error? _err;
+
+}

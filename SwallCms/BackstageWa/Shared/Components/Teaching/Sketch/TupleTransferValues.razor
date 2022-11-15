@@ -1,0 +1,22 @@
+﻿@*
+    使用 tuple 传递多个值
+*@
+
+<div class="card w-50 mb-1">
+    <div class="card-header fw-bold">
+        <code>Tuple</code> Card
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Integer:@Data?.Item1</li>
+            <li>String:@Data?.Item2</li>
+            <li>Boolean:@Data?.Item3</li>
+        </ul>
+    </div>
+</div>
+@code {
+    // 值类型的 tuple 或是 引用类型的 tuple,  在 user 端和组件端应该一致
+    [Parameter]
+    public Tuple<int, string, bool>? Data { get; set; }
+    //public (int, string, bool)? Data { get; set; }
+}
